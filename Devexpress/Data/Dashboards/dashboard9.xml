@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard>
+  <Title Text="New Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="gl" ComponentName="sqlDataSource1">
+      <Connection Name="MssqlConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="gl">
+        <Tables>
+          <Table Name="gl" />
+          <Table Name="coa" />
+          <Relation Type="Inner" Parent="coa" Nested="gl">
+            <KeyColumn Parent="Id" Nested="coaId" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <AllColumns Table="gl" />
+          <Column Table="gl" Name="Id" />
+          <Column Table="gl" Name="companyId" />
+          <Column Table="gl" Name="profitCenterId" />
+          <Column Table="gl" Name="coaId" />
+          <Column Table="gl" Name="amount" />
+          <Column Table="gl" Name="transDescription" />
+          <Column Table="gl" Name="transDate" />
+          <Column Table="gl" Name="transBy" />
+          <Column Table="gl" Name="transno" />
+          <Column Table="gl" Name="projectId" />
+          <Column Table="gl" Name="projectGroupId" />
+          <Column Table="gl" Name="reference" />
+          <Column Table="gl" Name="fiscalId" />
+          <Column Table="gl" Name="externalEntityId" />
+          <Column Table="gl" Name="externalEntityType" />
+          <Column Table="gl" Name="dateDone" />
+          <Column Table="gl" Name="quantityHours" />
+          <Column Table="gl" Name="originalTrans" />
+          <Column Table="gl" Name="transType" />
+          <Column Table="gl" Name="invoiceNo" />
+          <Column Table="gl" Name="workorderId" />
+          <Column Table="gl" Name="proposalId" />
+          <Column Table="gl" Name="taskId" />
+          <Column Table="gl" Name="branchId" />
+          <Column Table="coa" Name="Id" Alias="coa_Id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="accountType" />
+          <Column Table="coa" Name="statementType" />
+          <Column Table="coa" Name="jobCostCategory" />
+          <Column Table="coa" Name="accountCategory" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" />
+    </SqlDataSource>
+  </DataSources>
+</Dashboard>
