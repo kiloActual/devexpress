@@ -1,57 +1,64 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard>
-  <Title Text="Sample Dashboard" />
+  <Title Text="mssqlDashboard" />
   <DataSources>
-    <SqlDataSource ComponentName="DataSource1" DataProcessingMode="Client">
-      <Name>SalesPerson</Name>
-      <Connection Name="NWindConnectionString" FromAppConfig="true" />
-      <Query Type="SelectQuery" Name="SalesPerson">
+    <SqlDataSource Name="coa" ComponentName="sqlDataSource1">
+      <Connection Name="MssqlConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="coa">
         <Tables>
-          <Table Name="SalesPerson" />
+          <Table Name="coa" />
         </Tables>
         <Columns>
-          <AllColumns Table="SalesPerson" />
+          <Column Table="coa" Name="Id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="accountType" />
+          <Column Table="coa" Name="statementType" />
+          <Column Table="coa" Name="jobCostCategory" />
+          <Column Table="coa" Name="accountCategory" />
         </Columns>
       </Query>
       <ConnectionOptions CloseConnection="true" />
     </SqlDataSource>
   </DataSources>
   <Items>
-    <Chart ComponentName="chartDashboardItem1" Name="Chart 1" DataSource="DataSource1" DataMember="SalesPerson">
+    <Grid ComponentName="gridDashboardItem1" Name="Grid 1" DataSource="sqlDataSource1" DataMember="coa">
       <DataItems>
-        <Measure DataMember="ExtendedPrice" DefaultId="DataItem0" />
-        <Dimension DataMember="CategoryName" DefaultId="DataItem1" />
-        <Dimension DataMember="Country" DefaultId="DataItem2" />
+        <Measure DataMember="Id" DefaultId="DataItem0" />
+        <Measure DataMember="accountCategory" DefaultId="DataItem1" />
+        <Dimension DataMember="accountType" DefaultId="DataItem2" />
       </DataItems>
-      <SeriesDimensions>
-        <SeriesDimension DefaultId="DataItem2" />
-      </SeriesDimensions>
-      <Arguments>
-        <Argument DefaultId="DataItem1" />
-      </Arguments>
-      <Panes>
-        <Pane Name="Pane 1">
-          <Series>
-            <Simple>
-              <Value DefaultId="DataItem0" />
-            </Simple>
-          </Series>
-        </Pane>
-      </Panes>
-    </Chart>
-    <TreeView ComponentName="treeViewDashboardItem1" Name="Tree View 1" DataSource="DataSource1" DataMember="SalesPerson" AutoExpand="true">
+      <GridColumns>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem0" />
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem1" />
+        </GridMeasureColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Pie ComponentName="pieDashboardItem1" Name="Pies 1" DataSource="sqlDataSource1" DataMember="coa">
       <DataItems>
-        <Dimension DataMember="CategoryName" DefaultId="DataItem0" />
+        <Measure DataMember="Id" DefaultId="DataItem0" />
+        <Measure DataMember="accountCategory" DefaultId="DataItem2" />
+        <Measure DataMember="accountType" SummaryType="Count" DefaultId="DataItem1" />
       </DataItems>
-      <FilterDimensions>
-        <Dimension DefaultId="DataItem0" />
-      </FilterDimensions>
-    </TreeView>
+      <Values>
+        <Value DefaultId="DataItem0" />
+        <Value DefaultId="DataItem2" />
+        <Value DefaultId="DataItem1" />
+      </Values>
+    </Pie>
   </Items>
   <LayoutTree>
-    <LayoutGroup Weight="100">
-      <LayoutItem DashboardItem="treeViewDashboardItem1" Weight="34.589299171062549" />
-      <LayoutItem DashboardItem="chartDashboardItem1" Weight="165.41070082893745" />
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical">
+        <LayoutItem DashboardItem="gridDashboardItem1" />
+        <LayoutItem DashboardItem="pieDashboardItem1" />
+      </LayoutGroup>
     </LayoutGroup>
   </LayoutTree>
 </Dashboard>

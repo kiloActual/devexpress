@@ -62,6 +62,10 @@
               "target": "Package",
               "version": "[2.1.76, )"
             },
+            "Npgsql": {
+              "target": "Package",
+              "version": "[5.0.10, )"
+            },
             "System.Data.SQLite.Core": {
               "target": "Package",
               "version": "[1.0.112.2, )"

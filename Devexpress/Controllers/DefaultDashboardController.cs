@@ -4,6 +4,8 @@ using DevExpress.DashboardWeb;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Npgsql;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 
@@ -21,9 +23,10 @@ namespace Devexpress.Controllers {
         {
             string sql = "SELECT * FROM dbo.coa";
 
-            using (var connection = new SqlConnection("Server=localhost,5432;Database=test;User Id=postgres;Password=admin;"))
+            using (var connection = new NpgsqlConnection("Host=localhost;Port=5432;Username=postgres;Password=admin;Database=test;"))
             {
                 var orderDetail = connection.Query(sql).FirstOrDefault();
+                System.Console.WriteLine(connection.Query(sql).Count());
                 System.Console.WriteLine("data:",orderDetail);
             }
         }
