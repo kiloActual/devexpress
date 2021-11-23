@@ -1,0 +1,450 @@
+<Dashboard>
+  <Title Text="Work in Progress -  Hours" />
+  <DataSources>
+    <SqlDataSource Name="profitlosssummarybyprojectwithbudget" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="profitlosssummarybyprojectwithbudget">
+        <Tables>
+          <Table Name="profitlosssummarybyprojectwithbudget" />
+          <Table Name="project" />
+          <Table Name="company" />
+          <Table Name="branch" />
+          <Table Name="employee" Alias="salesemployee" />
+          <Table Name="employee" Alias="projectmanageremployee" />
+          <Table Name="employee" Alias="estimatorEmployee" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="profitcenter" />
+          <Table Name="employee" Alias="supervisoremployee" />
+          <Relation Type="LeftOuter" Parent="profitlosssummarybyprojectwithbudget" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="Inner" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="salesemployee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="projectmanageremployee">
+            <KeyColumn Parent="projectmanageremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="estimatorEmployee">
+            <KeyColumn Parent="estimatoremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="profitlosssummarybyprojectwithbudget" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybyprojectwithbudget" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="profitcenter">
+            <KeyColumn Parent="profitcenterid" Nested="id" />
+            <KeyColumn Parent="companyid" Nested="companyid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="supervisoremployee">
+            <KeyColumn Parent="supervisoremployeeid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="coaid" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="fiscalid" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="amount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="hours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="originalbudgethours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="originalbudgetamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="currentbudgethours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="currentbudgetamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedhourlyamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedhourlyhours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedsalaryamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedsalaryhours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedotheramount" />
+          <Column Table="project" Name="name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="salesemployee" Name="firstname" />
+          <Column Table="salesemployee" Name="lastname" />
+          <Column Table="projectmanageremployee" Name="firstname" Alias="projectManagerEmployee_firstName" />
+          <Column Table="projectmanageremployee" Name="lastname" Alias="projectManagerEmployee_lastName" />
+          <Column Table="estimatorEmployee" Name="firstname" Alias="estimatorEmployee_firstName" />
+          <Column Table="estimatorEmployee" Name="lastname" Alias="estimatorEmployee_lastName" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="project" Name="id" />
+          <Column Table="project" Name="groupid" />
+          <Column Table="project" Name="profitcenterid" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="datestart" />
+          <Column Table="project" Name="dateend" />
+          <Column Table="project" Name="estimatedpercentcomplete" />
+          <Column Table="project" Name="projecttype" />
+          <Column Table="project" Name="groupisclosed" />
+          <Column Table="profitcenter" Name="id" Alias="profitCenter_Id" />
+          <Column Table="profitcenter" Name="description" Alias="profitCenter_description" />
+          <Column Table="supervisoremployee" Name="firstname" Alias="supervisorEmployee_firstName" />
+          <Column Table="supervisoremployee" Name="lastname" Alias="supervisorEmployee_lastName" />
+          <Column Table="project" Name="contractperformanceperiodid" />
+        </Columns>
+        <Filter>[project.estimatedpercentcomplete] &lt; 1 And [project.groupisclosed] = False And [project.clientid] &gt; 0</Filter>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="revenue" Expression="Iif([statementtype]=4,[currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="directExpenses" Expression="Iif([statementtype] &gt;4,[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="grossProfit" Expression="[revenue] - [totalExpense]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="internalOrClient" Expression="Iif([clientid] = 0, 'Internal' , 'Client' )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="groupIdDescription" Expression="ToStr([groupid]) + ' - ' + [groupdescription]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="grossProfitVariance" Expression="[grossProfit] - [budgetGrossProfit]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="hoursVariance" Expression="[currentbudgethours] - [totalHours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="profitCenterIdDescription" Expression="ToStr([profitCenter_Id]) + ' - ' + [profitCenter_description]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="grossProfitMargin" Expression="Iif(SUM([revenue]) = 0,0 , SUM([grossProfit])/SUM([revenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="budgetRevenue" Expression="Iif([statementtype]=4,[currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="budgetExpenses" Expression="Iif([statementtype]&gt;4, [currentbudgetamount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="budgetGrossProfit" Expression="[budgetRevenue] - [budgetExpenses]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="budgetGrossProfitMargin" Expression="Iif(SUM([budgetRevenue])=0,0 , SUM([budgetGrossProfit])/SUM([budgetRevenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="estimatorLastFirst" Expression="[estimatorEmployee_lastName] + ', ' + [estimatorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectManagerLastFirst" Expression="[projectManagerEmployee_lastName] + ', ' + [projectManagerEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="salesPersonLastFirst" Expression="[lastname] + ', ' + [firstname]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="isInternal" Expression="Iif([clientid]=0, 'Internal', 'Client')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="totalHours" Expression="[hours] + [unPostedHours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="groupClosedOpen" Expression="Iif([groupisclosed]=True,'Closed' , 'Open')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="unPostedAmount" Expression="[unpostedhourlyamount] + [unpostedsalaryamount] + [unpostedsalaryamount]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="hoursVariancePercent" Expression="Iif(SUM([currentbudgethours])=0,0 ,SUM(([hoursVariance]))/SUM([currentbudgethours]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="unPostedHours" Expression="[unpostedhourlyhours] + [unpostedsalaryhours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="totalExpense" Expression="[directExpenses] + [unPostedAmount]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="efficiency" Expression="Iif(SUM([totalHours]) = 0,0, SUM([currentbudgethours]) / SUM([totalHours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="supervisorLastFirst" Expression=" [supervisorEmployee_lastName] + ', ' +[supervisorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="totalActualHours" Expression="[hours] + [unpostedhourlyhours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="laborVarianceEfficiency" Expression="Iif(SUM([currentbudgethours]) = 0,0,&#xA;SUM([totalActualHours]) / SUM([currentbudgethours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectIDName" Expression="ToStr([id]) + ' - ' + [name]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="revenueVariance" Expression="[budgetRevenue] - [revenue]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Project Type" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <descriptionDisplayMode>OnHover</descriptionDisplayMode>
+        <description>Gross Profit Margin Colors:  Dark Green: &gt; 50%  Light Green: 40% - 50%  Light Red: 20% - 30%  Dark Red: &lt; 20%    Hours Efficiency = Budget Hours/Actual Hours</description>
+      </CustomProperties>
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="projecttype" DefaultId="DataItem0" />
+        <Measure DataMember="budgetGrossProfit" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="grossProfit" DefaultId="DataItem2">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="grossProfitMargin" DefaultId="DataItem3">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="grossProfitVariance" DefaultId="DataItem4">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="efficiency" DefaultId="DataItem6">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="revenue" DefaultId="DataItem5">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="directExpenses" DefaultId="DataItem7">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem3" DataItemApplyTo="DataItem3">
+          <FormatConditionRangeSet ValueType="Number">
+            <RangeSet>
+              <Ranges>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="-100" />
+                  <AppearanceSettings AppearanceType="Red" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.2" />
+                  <AppearanceSettings AppearanceType="PaleRed" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.3" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.4" />
+                  <AppearanceSettings AppearanceType="PaleGreen" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.5" />
+                  <AppearanceSettings AppearanceType="Green" />
+                </RangeInfo>
+              </Ranges>
+            </RangeSet>
+          </FormatConditionRangeSet>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 2" DataItem="DataItem6" DataItemApplyTo="DataItem6">
+          <FormatConditionRangeSet ValueType="Number">
+            <RangeSet>
+              <Ranges>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="-100" />
+                  <AppearanceSettings AppearanceType="Red" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.7" />
+                  <AppearanceSettings AppearanceType="PaleRed" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="0.8" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="1.2" />
+                  <AppearanceSettings AppearanceType="PaleGreen" />
+                </RangeInfo>
+                <RangeInfo>
+                  <Value Type="System.Decimal" Value="1.3" />
+                  <AppearanceSettings AppearanceType="Green" />
+                </RangeInfo>
+              </Ranges>
+            </RangeSet>
+          </FormatConditionRangeSet>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Project Type" Weight="74.1176470588235">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Revenue" Weight="76.188475390156015">
+          <Measure DefaultId="DataItem5" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Direct Expenses" Weight="76.358257588749751">
+          <Measure DefaultId="DataItem7" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget Gross Profit" Weight="89.24369747899155">
+          <Measure DefaultId="DataItem1" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Gross Profit" Weight="67.310924369747866">
+          <Measure DefaultId="DataItem2" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Gross Profit Variance" Weight="91.512605042016759">
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Gross Profit Margin" Weight="68.823529411764667">
+          <Measure DefaultId="DataItem3" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Efficiency" Weight="67.310924369747866">
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions EnableBandedRows="true" />
+    </Grid>
+    <Grid ComponentName="gridDashboardItem2" Name="Project Manager" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <descriptionDisplayMode>OnHover</descriptionDisplayMode>
+        <description>Budget vs. Actual % = Budget Hours/Actual Hours</description>
+      </CustomProperties>
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="projectManagerLastFirst" DefaultId="DataItem0" />
+        <Measure DataMember="laborVarianceEfficiency" DefaultId="DataItem6">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="currentbudgethours" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="totalActualHours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="estimatedpercentcomplete" SummaryType="Average" DefaultId="DataItem3">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn Name="Project Manager" Weight="74.1176470588235">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Budget Hours" Weight="72.857142857142833">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Hours" Weight="72.321428571428541">
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget vs. Actual %" Weight="67.310924369747866">
+          <Measure DefaultId="DataItem6" />
+          <Totals>
+            <Total Type="Avg" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Est. % Complete" Weight="71.65178571428568">
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Avg" />
+          </Totals>
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions EnableBandedRows="true" />
+    </Grid>
+    <RangeFilter ComponentName="rangeFilterDashboardItem1" Name="Est. Percent Complete" ShowCaption="true" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Drag ends of the filter to filter dashboard to display projects within the desired Est. % Complete range.     Defined in Job Manager &gt; Budget Tab</description>
+      </CustomProperties>
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Measure DataMember="estimatedpercentcomplete" SummaryType="CountDistinct" DefaultId="DataItem0" />
+        <Dimension DataMember="estimatedpercentcomplete" Name="Est. Percent Complete" DefaultId="DataItem1">
+          <NumericFormat FormatType="Percent" />
+        </Dimension>
+      </DataItems>
+      <Argument DefaultId="DataItem1" />
+      <Series>
+        <Simple Name="Visual" SeriesType="Area">
+          <Value DefaultId="DataItem0" />
+        </Simple>
+      </Series>
+    </RangeFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Supervisor" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget" EnableSearch="true" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <descriptionDisplayMode>OnHover</descriptionDisplayMode>
+        <description>Filters dashboard to only selected Supervisor. This data is set in Job Manager under the Employee Tab</description>
+      </CustomProperties>
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="supervisorLastFirst" Name="Supervisor" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Grid ComponentName="gridDashboardItem4" Name="Projects" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Budget vs. Actual % = Budget Hours/Actual Hours</description>
+      </CustomProperties>
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="projectIDName" SortOrder="Descending" DefaultId="DataItem0">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Measure DataMember="laborVarianceEfficiency" DefaultId="DataItem6">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="currentbudgethours" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="totalActualHours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="estimatedpercentcomplete" SummaryType="Average" DefaultId="DataItem3">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="datestart" DateTimeGroupInterval="None" DefaultId="DataItem5" />
+        <Dimension DataMember="supervisorLastFirst" DefaultId="DataItem4" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem6" DataItemApplyTo="DataItem6">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="1" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Project ID" Weight="40.241831417997645">
+          <Dimension DefaultId="DataItem0" />
+          <Totals>
+            <Total />
+          </Totals>
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Date Start" Weight="66.445814666926339">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Supervisor" Weight="65.38695983360229">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Budget Hours" Weight="51.0041816809505">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Hours" Weight="78.1440214744838">
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget vs. Actual %" Weight="66.445814666926339">
+          <Measure DefaultId="DataItem6" />
+          <Totals>
+            <Total Type="Avg" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Est. % Complete" Weight="57.630046016751081">
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Avg" />
+          </Totals>
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions EnableBandedRows="true" />
+    </Grid>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Project Manager" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget" EnableSearch="true" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <descriptionDisplayMode>OnHover</descriptionDisplayMode>
+        <description>Filters dashboard to only selected Project Manager.     Defined in Job Manager &gt; Employee Tab</description>
+      </CustomProperties>
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="projectManagerLastFirst" Name="Project Manager" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Filters" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget" Color="-16484407">
+      <MeasureKey>
+        <Definition DataMember="estimatedpercentcomplete" SummaryType="CountDistinct" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical" Weight="1.1385202550405702">
+        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="0.23417866132546575">
+          <LayoutItem DashboardItem="rangeFilterDashboardItem1" Weight="0.52113584559490023" />
+          <LayoutGroup Orientation="Vertical" Weight="0.53555220088116406">
+            <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.53555220088116406" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.53555220088116406" />
+          </LayoutGroup>
+        </LayoutGroup>
+        <LayoutGroup Weight="1.2123212720494969">
+          <LayoutItem DashboardItem="gridDashboardItem2" Weight="1.1991508154387121" />
+          <LayoutItem DashboardItem="gridDashboardItem4" Weight="2.4180062274473118" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

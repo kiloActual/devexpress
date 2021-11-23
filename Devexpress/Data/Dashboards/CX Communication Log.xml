@@ -1,0 +1,262 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="CX Communications Log" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="communicationlog">
+        <Tables>
+          <Table Name="communicationlog" />
+          <Table Name="communicationlogtype" />
+          <Table Name="client" />
+          <Table Name="vendor" />
+          <Relation Type="Inner" Parent="communicationlog" Nested="communicationlogtype">
+            <KeyColumn Parent="logtypeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="communicationlog" Nested="client">
+            <KeyColumn Parent="clientid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="communicationlog" Nested="vendor">
+            <KeyColumn Parent="vendorid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="communicationlog" Name="clientid" />
+          <Column Table="communicationlog" Name="vendorid" />
+          <Column Table="communicationlog" Name="proposalid" />
+          <Column Table="communicationlog" Name="projectid" />
+          <Column Table="communicationlog" Name="assetuserid" />
+          <Column Table="communicationlog" Name="description" />
+          <Column Table="communicationlog" Name="date" />
+          <Column Table="communicationlogtype" Name="description" Alias="communicationlogtype_description" />
+          <Column Table="client" Name="businessnameorsurname" />
+          <Column Table="client" Name="accountopendate" />
+          <Column Table="client" Name="accountcloseddate" />
+          <Column Table="vendor" Name="accountopendate" Alias="vendor_accountOpenDate" />
+          <Column Table="vendor" Name="accountcloseddate" Alias="vendor_accountClosedDate" />
+          <Column Table="vendor" Name="name" />
+          <Column Table="vendor" Name="websiteurl" />
+          <Column Table="communicationlog" Name="calldetail" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="SQL Data Source 1">
+          <View Name="communicationlog">
+            <Field Name="clientid" Type="Int32" />
+            <Field Name="vendorid" Type="Int32" />
+            <Field Name="proposalid" Type="Int32" />
+            <Field Name="projectid" Type="Int32" />
+            <Field Name="assetuserid" Type="String" />
+            <Field Name="description" Type="String" />
+            <Field Name="date" Type="DateTime" />
+            <Field Name="communicationlogtype_description" Type="String" />
+            <Field Name="businessnameorsurname" Type="String" />
+            <Field Name="accountopendate" Type="DateTime" />
+            <Field Name="accountcloseddate" Type="DateTime" />
+            <Field Name="vendor_accountopendate" Type="DateTime" />
+            <Field Name="vendor_accountcloseddate" Type="DateTime" />
+            <Field Name="name" Type="String" />
+            <Field Name="websiteurl" Type="String" />
+            <Field Name="calldetail" Type="String" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Entity" Expression="iif([vendorid]&gt;0,[name],iif([clientid]&gt;0,[businessnameorsurname],'Other'))" DataType="Auto" DataMember="communicationlog" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Communication Log History" DataSource="dashboardSqlDataSource1" DataMember="communicationlog">
+      <InteractivityOptions MasterFilterMode="Multiple" TargetDimensions="Series" />
+      <DataItems>
+        <Dimension DataMember="communicationlogtype_description" Name="Communcation Log Type" SortByMeasure="DataItem2" DefaultId="DataItem0" />
+        <Dimension DataMember="date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+        <Measure DataMember="communicationlogtype_description" Name="Log Type" SummaryType="Count" DefaultId="DataItem2" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem0" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Count of Log Type" Logarithmic="true" />
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem2" />
+              <PointLabelOptions OverlappingMode="None" Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend IsInsidePosition="true" InsidePosition="TopLeftVertical" OutsidePosition="TopLeftVertical" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Log Type" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="communicationlog" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="communicationlogtype_description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Grid ComponentName="gridDashboardItem1" Name="Call Summary" DataSource="dashboardSqlDataSource1" DataMember="communicationlog" FilterString="[DataItem2] &lt;&gt; 'DEV1'">
+      <DataItems>
+        <Dimension DataMember="description" Name="Summary" SortOrder="Descending" DefaultId="DataItem0" />
+        <Dimension DataMember="date" Name="Date" DateTimeGroupInterval="None" DefaultId="DataItem1" />
+        <Dimension DataMember="assetuserid" Name="Asset User" DefaultId="DataItem2" />
+        <Dimension DataMember="communicationlogtype_description" Name="Log Type" DefaultId="DataItem3" />
+        <Dimension DataMember="calldetail" Name="Detail" DefaultId="DataItem6" />
+        <Dimension DataMember="Entity" DefaultId="DataItem5" />
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn Name="Date" Weight="44.940731105014038">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Description" Weight="84.5313751737169">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="125.19203664968197">
+          <Dimension DefaultId="DataItem6" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Asset User" Weight="50.290818141325239">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Comm Type" Weight="50.290818141325239">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="54.888682940331108">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions EnableBandedRows="true" ColumnWidthMode="AutoFitToContents" WordWrap="true" />
+    </Grid>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Range" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="communicationlog" SelectedDateTimePeriodIndex="Last 30 Days">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Today">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 7 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-7" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 30 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-30" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 60 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-60" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 90 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-90" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 6 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-6" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Client Name" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="communicationlog" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="businessnameorsurname" Name="Client Or Business Name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="communicationlog" Color="-13202228">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="communicationlogtype_description" />
+          <Value Type="System.String" Value="Client Request for Service" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="communicationlog" Color="-6764743">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="communicationlogtype_description" />
+          <Value Type="System.String" Value="New Lead" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="communicationlog" Color="-1983447">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="communicationlogtype_description" />
+          <Value Type="System.String" Value="Other" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="communicationlog" Color="-219580">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="communicationlogtype_description" />
+          <Value Type="System.String" Value="Personal Call" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="communicationlog" Color="-8951634">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="communicationlogtype_description" />
+          <Value Type="System.String" Value="Request for Proposal" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem1" Weight="47.189403903301994">
+        <LayoutGroup Weight="13.102409638554217">
+          <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="16.240690065958603" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="17.505507028518206" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="52.8397480726736" />
+        </LayoutGroup>
+      </LayoutGroup>
+      <LayoutGroup Weight="86.897590361445779">
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="46.087991094250015" />
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="53.912008905749992" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

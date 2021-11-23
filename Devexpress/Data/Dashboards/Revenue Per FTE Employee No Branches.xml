@@ -1,0 +1,246 @@
+<Dashboard>
+  <Title Text="Revenue Per Employee" />
+  <DataSources>
+    <SqlDataSource Name="revenuebybranchbyyear" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true"></Connection>
+      <Query Type="SelectQuery" Name="revenuebybranchbyyear">
+        <Tables>
+          <Table Name="revenuebybranchbyyear" X="30" Y="30" Width="125" Height="121" />
+          <Table Name="laborbybranchbyyear" X="180" Y="130" Width="125" Height="229" />
+          <Table Name="branch" X="340" Y="30" Width="125" Height="121" />
+          <Table Name="company" X="495" Y="30" Width="125" Height="103" />
+          <Relation Type="Inner" Parent="revenuebybranchbyyear" Nested="laborbybranchbyyear">
+            <KeyColumn Parent="fiscalyear" Nested="fiscalyear" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="revenuebybranchbyyear" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="branch" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="revenuebybranchbyyear" Name="fiscalyear" />
+          <Column Table="revenuebybranchbyyear" Name="branchid" />
+          <Column Table="revenuebybranchbyyear" Name="revenue" />
+          <Column Table="laborbybranchbyyear" Name="fiscalyear" Alias="laborbybranchbyyear_fiscalyear" />
+          <Column Table="laborbybranchbyyear" Name="branchid" Alias="laborbybranchbyyear_branchId" />
+          <Column Table="laborbybranchbyyear" Name="activeemployees" />
+          <Column Table="laborbybranchbyyear" Name="regularhours" />
+          <Column Table="laborbybranchbyyear" Name="overtimehours" />
+          <Column Table="laborbybranchbyyear" Name="totalhours" />
+          <Column Table="laborbybranchbyyear" Name="regularpay" />
+          <Column Table="laborbybranchbyyear" Name="overtimepay" />
+          <Column Table="laborbybranchbyyear" Name="totalpay" />
+          <Column Table="branch" Name="name" />
+          <Column Table="branch" Name="companyid" />
+          <Column Table="company" Name="name" Alias="company_name" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="revenuebybranchbyyear">
+          <View Name="revenuebybranchbyyear">
+            <Field Name="fiscalyear" Type="Int32" />
+            <Field Name="branchid" Type="Int32" />
+            <Field Name="revenue" Type="Double" />
+            <Field Name="laborbybranchbyyear_fiscalyear" Type="Int32" />
+            <Field Name="laborbybranchbyyear_branchId" Type="Int32" />
+            <Field Name="activeemployees" Type="Int32" />
+            <Field Name="regularhours" Type="Decimal" />
+            <Field Name="overtimehours" Type="Decimal" />
+            <Field Name="totalhours" Type="Decimal" />
+            <Field Name="regularpay" Type="Decimal" />
+            <Field Name="overtimepay" Type="Decimal" />
+            <Field Name="totalpay" Type="Decimal" />
+            <Field Name="name" Type="String" />
+            <Field Name="companyid" Type="Int32" />
+            <Field Name="company_name" Type="String" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Revenue Per FTE Employee" Expression="iif([FTE Equivalent Based on 40 Hour Week]=0,0,[revenue]/ [FTE Equivalent Based on 40 Hour Week] )" DataType="Auto" DataMember="revenuebybranchbyyear" />
+        <CalculatedField Name="Hours Per Employee" Expression="iif( [FTE Equivalent Based on 40 Hour Week] =0,0,[totalhours]/ [FTE Equivalent Based on 40 Hour Week] )" DataType="Auto" DataMember="revenuebybranchbyyear" />
+        <CalculatedField Name="Weekly Hours Per Employee" Expression="[Hours Per Employee]/52" DataType="Auto" DataMember="revenuebybranchbyyear" />
+        <CalculatedField Name="FTE Equivalent Based on 40 Hour Week" Expression="totalhours/40/50" DataType="Auto" DataMember="revenuebybranchbyyear" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Details" DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear">
+      <DataItems>
+        <Dimension DataMember="Revenue Per FTE Employee" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Dimension DataMember="revenue" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Dimension DataMember="activeemployees" DefaultId="DataItem2" />
+        <Dimension DataMember="totalpay" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Dimension DataMember="Hours Per Employee" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Measure DataMember="Weekly Hours Per Employee" DefaultId="DataItem6">
+          <NumericFormat FormatType="Number" />
+        </Measure>
+        <Dimension DataMember="FTE Equivalent Based on 40 Hour Week" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" />
+        </Dimension>
+        <Dimension DataMember="fiscalyear" DefaultId="DataItem8">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Dimension DataMember="Hours Per Employee" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn Name="Year" Weight="38.7462235649547">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Employees Active In Year" Weight="45.883685800604248">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="FTE Equivalent (40 Hour Week)" Weight="107.57175226586107">
+          <Dimension DefaultId="DataItem7" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="80.55135951661633">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Revenue" Weight="53.0211480362538">
+          <Dimension DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Total Pay" Weight="41.295317220543822">
+          <Dimension DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Total Hours" Weight="47.413141993957723">
+          <Dimension DefaultId="DataItem4" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="155.49471299093659">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Weekly Hours Per Employee (50 Weeks)" Weight="105.02265861027195">
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions ColumnWidthMode="Manual" />
+    </Grid>
+    <Chart ComponentName="chartDashboardItem1" Name="Revenue Per FTE Equivalent 40 Hour Week" DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear">
+      <DataItems>
+        <Dimension DataMember="fiscalyear" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Measure DataMember="Revenue Per FTE Employee" Name="Revenue Per FTE Employee" DefaultId="DataItem3" />
+        <Measure DataMember="revenue" Name="Revenue" DefaultId="DataItem0" />
+        <Measure DataMember="FTE Equivalent Based on 40 Hour Week" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Total Revenue" AlwaysShowZeroLevel="false" ShowGridLines="false">
+            <NumericFormat FormatType="General" />
+          </AxisY>
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions OverlappingMode="None" Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2">
+          <AxisY Title="Revenue Per FTE" ShowGridLines="false" />
+          <Series>
+            <Simple Name="Revenue Per FTE Employee">
+              <Value DefaultId="DataItem3" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 3">
+          <AxisY Title="FTE Count" ShowGridLines="false">
+            <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+          </AxisY>
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions Position="Inside" ShowForZeroValues="true" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <AxisX EnableZooming="true">
+        <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+      </AxisX>
+    </Chart>
+    <ListBox ComponentName="listBoxDashboardItem1" Name="Company" DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear">
+      <DataItems>
+        <Dimension DataMember="company_name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ListBox>
+    <ListBox ComponentName="listBoxDashboardItem2" Name="Branch" DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear">
+      <DataItems>
+        <Dimension DataMember="name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ListBox>
+    <RangeFilter ComponentName="rangeFilterDashboardItem1" Name="Range Filter 1" DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear">
+      <DataItems>
+        <Measure DataMember="FTE Equivalent Based on 40 Hour Week" DefaultId="DataItem0" />
+        <Dimension DataMember="fiscalyear" DefaultId="DataItem1">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+      </DataItems>
+      <Argument DefaultId="DataItem1" />
+      <Series>
+        <Simple SeriesType="Line">
+          <Value DefaultId="DataItem0" />
+        </Simple>
+      </Series>
+    </RangeFilter>
+  </Items>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear" Color="-15550233">
+      <MeasureKey>
+        <Definition DataMember="Revenue Per FTE Employee" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="revenuebybranchbyyear" Color="-7491658">
+      <MeasureKey>
+        <Definition DataMember="FTE Equivalent Based on 40 Hour Week" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Weight="100">
+      <LayoutGroup Orientation="Vertical" Weight="85.569620253164558">
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="68.888888888888886" />
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="18.067632850241544" />
+        <LayoutItem DashboardItem="rangeFilterDashboardItem1" Weight="13.043478260869565" />
+      </LayoutGroup>
+      <LayoutGroup Orientation="Vertical" Weight="14.430379746835444">
+        <LayoutItem DashboardItem="listBoxDashboardItem1" Weight="49.855072463768117" />
+        <LayoutItem DashboardItem="listBoxDashboardItem2" Weight="50.144927536231883" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

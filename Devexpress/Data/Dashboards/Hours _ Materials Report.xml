@@ -1,0 +1,667 @@
+<Dashboard>
+  <Title Text="Project Profit &amp; Loss" />
+  <DataSources>
+    <SqlDataSource Name="profitlosssummarybyprojectwithbudget" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="profitlosssummarybyprojectwithbudget">
+        <Tables>
+          <Table Name="profitlosssummarybyprojectwithbudget" />
+          <Table Name="project" />
+          <Table Name="company" />
+          <Table Name="employee" Alias="salesemployee" />
+          <Table Name="employee" Alias="projectmanageremployee" />
+          <Table Name="employee" Alias="estimatoremployee" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="branch" />
+          <Table Name="employee" />
+          <Relation Type="LeftOuter" Parent="profitlosssummarybyprojectwithbudget" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="Inner" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="salesemployee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="projectmanageremployee">
+            <KeyColumn Parent="projectmanageremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="estimatoremployee">
+            <KeyColumn Parent="estimatoremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybyprojectwithbudget" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybyprojectwithbudget" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="employee">
+            <KeyColumn Parent="supervisoremployeeid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="coaid" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="fiscalid" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="amount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="hours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="originalbudgethours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="originalbudgetamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="currentbudgethours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="currentbudgetamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedhourlyamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedhourlyhours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedsalaryamount" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedsalaryhours" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="unpostedotheramount" />
+          <Column Table="project" Name="name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="salesemployee" Name="firstname" />
+          <Column Table="salesemployee" Name="lastname" />
+          <Column Table="projectmanageremployee" Name="firstname" Alias="projectManagerEmployee_firstName" />
+          <Column Table="projectmanageremployee" Name="lastname" Alias="projectManagerEmployee_lastName" />
+          <Column Table="estimatoremployee" Name="firstname" Alias="estimatorEmployee_firstName" />
+          <Column Table="estimatoremployee" Name="lastname" Alias="estimatorEmployee_lastName" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="project" Name="id" />
+          <Column Table="project" Name="groupid" />
+          <Column Table="project" Name="profitcenterid" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="datestart" />
+          <Column Table="project" Name="dateend" />
+          <Column Table="project" Name="estimatedpercentcomplete" />
+          <Column Table="project" Name="projecttype" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="project" Name="supervisoremployeeid" />
+          <Column Table="employee" Name="firstname" Alias="employee_firstName" />
+          <Column Table="employee" Name="lastname" Alias="employee_lastName" />
+          <Column Table="coa" Name="id" Alias="coa_Id" />
+          <Column Table="project" Name="groupisclosed" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Revenue" Expression="Iif([statementtype]=4,[currentbudgetamount] ,0 )&#xA;" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Expense" Expression="Iif(coaid&gt;40000,[amount],0)&#xA;" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Gross Profit" Expression="[Revenue]-[Expense]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Salesperson" Expression="Concat( [lastname] ,' , ', [firstname]  ) " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Calculated Field 2" Expression="[hours] - [currentbudgethours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Hours Variance" Expression="[hours] - [currentbudgethours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Crew" Expression="Concat( [employee_lastName] ,', ', [employee_firstName]  )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Job" Expression="Concat( [id] ,'-', [groupid] ,' -- ', [name]  ) " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="totalHours" Expression="[hours] + [unpostedhourlyhours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Calculated Field 3" Expression="[hours] + [unpostedhourlyhours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Calculated Field 4" Expression="[hours] + [unpostedhourlyhours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Calculated Field 5" Expression="[hours] + [unpostedhourlyamount] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Calculated Field 6" Expression="[hours] + [unpostedhourlyhours] " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="efficiency" Expression="Iif( Sum( [totalHours] )=0 ,0 , Sum( [currentbudgethours] )/ Sum( [totalHours] )   ) " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="HoursEfficiency" Expression="Iif( Sum( [totalHours] )=0,0 , Sum( [currentbudgethours] ) / Sum( [totalHours] )  ) " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="BudgetMaterial" Expression="iif([coaid]=50000,[currentbudgetamount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="ActualMaterial" Expression="iif([coaid]=50000,[amount],0) + iif([coaid]=56000,[amount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Material Efficiency" Expression="iif(sum([ActualMaterial])=0,0,Sum([BudgetMaterial])/sum([ActualMaterial]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Budget Sub" Expression="iif([coaid]=52000,[currentbudgetamount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Actual Sub" Expression="iif([coaid]=52000,[amount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="Supervisor" Expression="Concat( [lastname] ,' , ', [firstname]  ) " DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Job#-Grp# -- Job Name" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="Job" Name="Job#" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Measure DataMember="currentbudgethours" Name="Budget Hours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="totalHours" Name="Actual Hours" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="efficiency" DefaultId="DataItem4">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="BudgetMaterial" DefaultId="DataItem5">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="ActualMaterial" DefaultId="DataItem6">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Material Efficiency" DefaultId="DataItem7">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="datestart" DateTimeGroupInterval="None" DefaultId="DataItem9" />
+        <Dimension DataMember="dateend" DateTimeGroupInterval="None" DefaultId="DataItem10" />
+        <Dimension DataMember="estimatedpercentcomplete" DefaultId="DataItem11">
+          <NumericFormat FormatType="Percent" />
+        </Dimension>
+        <Dimension DataMember="Crew" DefaultId="DataItem12" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 2" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.4" />
+            <Value2 Type="System.Decimal" Value="8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 3" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 4" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.69" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 5" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 6" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 7" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 8" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+          <Totals>
+            <Total />
+          </Totals>
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Efficiency">
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget Material">
+          <Measure DefaultId="DataItem5" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Material">
+          <Measure DefaultId="DataItem6" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Material Efficiency">
+          <Measure DefaultId="DataItem7" />
+        </GridMeasureColumn>
+        <GridDimensionColumn Name="Date Started">
+          <Dimension DefaultId="DataItem9" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Dated Ended">
+          <Dimension DefaultId="DataItem10" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="% Complete">
+          <Dimension DefaultId="DataItem11" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem12" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Completed" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget" IsMasterFilterCrossDataSource="true" FilterType="Exact" ArrangementMode="Horizontal">
+      <DataItems>
+        <Dimension DataMember="dateend" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last Month">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Two Months Ago">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-2" />
+          </StartLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Salesperson" ShowItemAsTabPage="false" />
+        <Page ComponentName="dashboardTabPage2" Name="Profit Center" ShowItemAsTabPage="false" />
+        <Page ComponentName="dashboardTabPage3" Name="Crew" ShowItemAsTabPage="false" />
+      </Pages>
+    </TabContainer>
+    <Grid ComponentName="gridDashboardItem3" Name="Hours" ParentContainer="dashboardTabPage1" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="Salesperson" DefaultId="DataItem0" />
+        <Measure DataMember="currentbudgethours" Name="Budget Hours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Calculated Field 6" Name="Actual Hours" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="HoursEfficiency" DefaultId="DataItem4">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="BudgetMaterial" DefaultId="DataItem5">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="ActualMaterial" DefaultId="DataItem6">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Material Efficiency" DefaultId="DataItem7">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.3" />
+            <Value2 Type="System.Decimal" Value="1.4" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 2" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.4" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 3" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 4" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 5" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 6" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 7" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+            <Value2 Type="System.Decimal" Value="0.7" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 8" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget Material">
+          <Measure DefaultId="DataItem5" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Material">
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Material Efficiency">
+          <Measure DefaultId="DataItem7" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Grid ComponentName="gridDashboardItem4" Name="Grid 1" ParentContainer="dashboardTabPage2" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="profitcenterid" DefaultId="DataItem0" />
+        <Measure DataMember="currentbudgethours" Name="Budget Hours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Calculated Field 4" Name="Actual Hours" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="HoursEfficiency" DefaultId="DataItem4">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 2" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 3" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 4" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Grid ComponentName="gridDashboardItem2" Name="Crew" ParentContainer="dashboardTabPage3" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="Crew" Name="Crew" DefaultId="DataItem0" />
+        <Measure DataMember="Revenue" Name="Revenue" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="currentbudgethours" Name="Budget Hours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Calculated Field 3" Name="Actual Hours" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="efficiency" DefaultId="DataItem4">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="BudgetMaterial" DefaultId="DataItem5">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="ActualMaterial" DefaultId="DataItem6">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Material Efficiency" DefaultId="DataItem7">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 2" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 3" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 4" DataItem="DataItem4" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.7" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 5" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleGreen" />
+            <Value1 Type="System.Decimal" Value="1.2" />
+            <Value2 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 6" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="Green" />
+            <Value1 Type="System.Decimal" Value="1.3" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 7" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Between">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="Format Rule 8" DataItem="DataItem7" DataItemApplyTo="DataItem7">
+          <FormatConditionValue Condition="Less">
+            <AppearanceSettings AppearanceType="Red" />
+            <Value1 Type="System.Decimal" Value="0.6" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Efficiency">
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Budget Material">
+          <Measure DefaultId="DataItem5" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Actual Material">
+          <Measure DefaultId="DataItem6" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Material Efficiency">
+          <Measure DefaultId="DataItem7" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <TreeView ComponentName="treeViewDashboardItem1" Name="Estimated % Complete" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="estimatedpercentcomplete" Name="Estimated % Completed" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" />
+        </Dimension>
+        <Measure DataMember="estimatedpercentcomplete" FilterString="[DataItem0] &lt; 1" DefaultId="DataItem1" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem1" />
+      </HiddenMeasures>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </TreeView>
+    <ListBox ComponentName="listBoxDashboardItem1" Name="Profit Center" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="profitcenterid" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ListBox>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Job Type" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="projecttype" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem2" Name="Date Started" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="datestart" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Closed - True or False" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="groupisclosed" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <TreeView ComponentName="treeViewDashboardItem2" Name="Crew" DataSource="sqlDataSource1" DataMember="profitlosssummarybyprojectwithbudget">
+      <DataItems>
+        <Dimension DataMember="Crew" Name="Crew" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </TreeView>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical">
+      <LayoutGroup Weight="0.5419850068819666">
+        <LayoutItem DashboardItem="treeViewDashboardItem1" Weight="1.2153283759307587" />
+        <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="1.2153283759307587" />
+        <LayoutItem DashboardItem="listBoxDashboardItem1" Weight="1.2153283759307587" />
+        <LayoutItem DashboardItem="treeViewDashboardItem2" Weight="1.5622037262781732" />
+        <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="1.2153283759307587" />
+        <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="1.2153283759307587" />
+        <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="0.5419850068819666" />
+      </LayoutGroup>
+      <LayoutGroup Weight="1.8804979876803085">
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="1.5622037262781732" />
+        <LayoutTabContainer DashboardItem="tabContainerDashboardItem1" Weight="0.86845302558334425">
+          <LayoutTabPage DashboardItem="dashboardTabPage3">
+            <LayoutItem DashboardItem="gridDashboardItem2" />
+          </LayoutTabPage>
+          <LayoutTabPage DashboardItem="dashboardTabPage2">
+            <LayoutItem DashboardItem="gridDashboardItem4" />
+          </LayoutTabPage>
+          <LayoutTabPage DashboardItem="dashboardTabPage1">
+            <LayoutItem DashboardItem="gridDashboardItem3" />
+          </LayoutTabPage>
+        </LayoutTabContainer>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

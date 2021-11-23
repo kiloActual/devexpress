@@ -1,0 +1,231 @@
+<Dashboard>
+  <Title Text="[DEV] Balance Sheet data test" />
+  <DataSources>
+    <SqlDataSource Name="profitLossSummaryByCompanyPcFiscalCoa" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="balancesheetfiscalsummarybycompany">
+        <Tables>
+          <Table Name="balancesheetfiscalsummarybycompany" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="glcategoryglaccountlink" />
+          <Table Name="glcategory" />
+          <Relation Type="Inner" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="Inner" Parent="balancesheetfiscalsummarybycompany" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="balancesheetfiscalsummarybycompany" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="balancesheetfiscalsummarybycompany" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="coa" Name="id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="balancesheetfiscalsummarybycompany" Name="runningtotal" />
+          <Column Table="company" Name="name" />
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="glcategory" Name="description" Alias="glCategory_description" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="id" Alias="fiscal_Id" />
+          <Column Table="fiscal" Name="dateto" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="runningTotalAdjust" Expression="Iif([statementtype] &gt; 1,[runningtotal]*-1 ,[runningtotal] )" DataType="Auto" DataMember="balancesheetfiscalsummarybycompany" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="GL Accounts" ParentContainer="groupDashboardItem2" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany">
+      <DataItems>
+        <Measure DataMember="sort" SummaryType="Max" DefaultId="DataItem0" />
+        <Dimension DataMember="id" SortByMeasure="DataItem0" DefaultId="DataItem1">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Dimension DataMember="description" DefaultId="DataItem2" />
+        <Measure DataMember="runningTotalAdjust" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem0" />
+      </HiddenMeasures>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="COA description">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Running Total">
+          <Measure DefaultId="DataItem3" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <ListBox ComponentName="listBoxDashboardItem1" Name="Fiscal Period" ParentContainer="groupDashboardItem2" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" ShowAllValue="false" ListBoxType="Radio">
+      <DataItems>
+        <Dimension DataMember="fiscal_Id" SortOrder="Descending" DefaultId="DataItem0" />
+        <Dimension DataMember="fiscal_description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ListBox>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="Company" ParentContainer="groupDashboardItem2" DataSource="sqlDataSource1" DataMember="profitLossSummaryByCompanyPcFiscalCoa" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Pivot ComponentName="pivotDashboardItem2" Name="Balance Sheet GL Categories" ParentContainer="groupDashboardItem2" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany">
+      <DataItems>
+        <Dimension DataMember="glCategory_description" SortByMeasure="DataItem3" DefaultId="DataItem0" />
+        <Dimension DataMember="description" DefaultId="DataItem2" />
+        <Measure DataMember="sort" SummaryType="Max" DefaultId="DataItem3" />
+        <Measure DataMember="runningTotalAdjust" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem3" />
+      </HiddenMeasures>
+      <Rows>
+        <Row DefaultId="DataItem0" />
+        <Row DefaultId="DataItem2" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem4" />
+      </Values>
+      <AutoExpandRowGroups>true</AutoExpandRowGroups>
+      <ShowRowGrandTotals>false</ShowRowGrandTotals>
+    </Pivot>
+    <Grid ComponentName="gridDashboardItem2" Name="GL Sort, Category, and Account" ParentContainer="groupDashboardItem2" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany">
+      <DataItems>
+        <Measure DataMember="sort" SummaryType="Max" DefaultId="DataItem0" />
+        <Dimension DataMember="glCategory_description" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+        <Dimension DataMember="description" DefaultId="DataItem2" />
+        <Measure DataMember="runningTotalAdjust" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="sort" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem0" />
+      </HiddenMeasures>
+      <GridColumns>
+        <GridDimensionColumn Name="Sort">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="GL Category Description">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="COA Description">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Running Total">
+          <Measure DefaultId="DataItem3" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem2" Name="Group 1" ShowCaption="false" />
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="profitLossSummaryByCompanyPcFiscalCoa" Color="-13927238">
+      <MeasureKey>
+        <Definition DataMember="Amount Adjusted" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitLossSummaryByCompanyPcFiscalCoa" Color="-14531241">
+      <MeasureKey>
+        <Definition DataMember="Percent of Revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitLossSummaryByCompanyPcFiscalCoa" Color="-10249056">
+      <MeasureKey>
+        <Definition DataMember="Expense" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitLossSummaryByCompanyPcFiscalCoa" Color="-13934157">
+      <MeasureKey>
+        <Definition DataMember="Revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16561741">
+      <MeasureKey>
+        <Definition DataMember="revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16285447">
+      <MeasureKey>
+        <Definition DataMember="directLabor" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-15055783">
+      <MeasureKey>
+        <Definition DataMember="materials" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-15922801">
+      <MeasureKey>
+        <Definition DataMember="netProfit" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16741707">
+      <MeasureKey>
+        <Definition DataMember="indirectExpenses" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeTurnover" Color="-16159857">
+      <MeasureKey>
+        <Definition DataMember="numEmpsActiveInPeriod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeTurnover" Color="-14775014">
+      <MeasureKey>
+        <Definition DataMember="numEmpsHiredInPeriod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeTurnover" Color="-5760434">
+      <MeasureKey>
+        <Definition DataMember="numEmpsTerminatedInPeriod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeTurnover" Color="-1023981">
+      <MeasureKey>
+        <Definition DataMember="numEmpsTerminatedLessThanOneYear" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup DashboardItem="groupDashboardItem2">
+        <LayoutGroup Orientation="Vertical" Weight="0.48571065361938831">
+          <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="0.23283087981816475" />
+          <LayoutItem DashboardItem="listBoxDashboardItem1" Weight="0.23283087981816475" />
+        </LayoutGroup>
+        <LayoutItem DashboardItem="pivotDashboardItem2" Weight="1.0369538224102131" />
+        <LayoutItem DashboardItem="gridDashboardItem2" Weight="2.1412849504927136" />
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="1.3646292662389088" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

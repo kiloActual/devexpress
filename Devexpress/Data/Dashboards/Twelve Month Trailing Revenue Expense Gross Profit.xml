@@ -1,0 +1,293 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="Trailing 12 Month Revenue, Expense &amp; Gross Profit By Company" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="trailing12monthrevenueexpense">
+        <Tables>
+          <Table Name="trailing12monthrevenueexpense" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="coa" />
+          <Relation Type="LeftOuter" Parent="trailing12monthrevenueexpense" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="trailing12monthrevenueexpense" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="trailing12monthrevenueexpense" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="trailing12monthrevenueexpense" Name="companyid" />
+          <Column Table="trailing12monthrevenueexpense" Name="fiscalid" />
+          <Column Table="trailing12monthrevenueexpense" Name="coaid" />
+          <Column Table="trailing12monthrevenueexpense" Name="amount" />
+          <Column Table="trailing12monthrevenueexpense" Name="twelvemo" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="company" Name="name" />
+          <Column Table="coa" Name="description" Alias="coa_description" />
+          <Column Table="coa" Name="statementtype" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="SQL Data Source 1">
+          <View Name="trailing12monthrevenueexpense">
+            <Field Name="companyid" Type="Int32" />
+            <Field Name="fiscalid" Type="Int32" />
+            <Field Name="coaid" Type="Int32" />
+            <Field Name="amount" Type="Double" />
+            <Field Name="twelvemo" Type="Double" />
+            <Field Name="description" Type="String" />
+            <Field Name="dateto" Type="DateTime" />
+            <Field Name="name" Type="String" />
+            <Field Name="coa_description" Type="String" />
+            <Field Name="statementtype" Type="Int32" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="revenue" Expression="iif([statementtype]=4,[amount]*-1,0)&#xA;" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="revenueTrailing12" Expression="iif([statementtype]=4,[twelvemo]*-1,0)&#xA;" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="expense" Expression="iif([statementtype] &gt; 4,[amount],0)&#xA;" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="expenseTrailing12" Expression="iif([statementtype]&gt;4,[twelvemo],0)&#xA;" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="grossProfitTrailing12" Expression="[revenueTrailing12]-[expenseTrailing12]" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="grossProfit" Expression="[revenue]-[expense]&#xA;" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+        <CalculatedField Name="grossProfitPercent" Expression="iif([revenue]=0,0,([revenue]-[expense])/[revenue])" DataType="Auto" DataMember="trailing12monthrevenueexpense" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Gross Profit" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+        <Measure DataMember="grossProfitTrailing12" DefaultId="DataItem0" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false">
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple Name="Trailing Gross Profit" SeriesType="Area">
+              <Value DefaultId="DataItem0" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Company" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" SelectedDateTimePeriodIndex="This Year">
+      <DataItems>
+        <Dimension DataMember="dateto" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 2 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 3 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-3" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 5 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-5" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Card ComponentName="cardDashboardItem1" Name="Cards " ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" ContentLineCount="1">
+      <DataItems>
+        <Measure DataMember="grossProfitPercent" Name="Gross Profit" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="revenue" Name="Revenue" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="expense" Name="Expense" DefaultId="DataItem2">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="expense" Name="Gross Profit %" Expression="iif(sum([revenue])=0,0,&#xA;&#xA;(sum([revenue])-sum([expense])) / sum([revenue]))" DefaultId="DataItem3">
+          <NumericFormat FormatType="Percent" />
+          <WindowDefinition>
+            <CardWindowDefinition />
+          </WindowDefinition>
+        </Measure>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem5" />
+      </DataItems>
+      <Card>
+        <ActualValue DefaultId="DataItem1" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card>
+        <ActualValue DefaultId="DataItem2" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card>
+        <ActualValue DefaultId="DataItem0" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Gross Profit %">
+        <ActualValue DefaultId="DataItem3" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" ResultIndicationThreshold="47" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <SparklineArgument DefaultId="DataItem5" />
+    </Card>
+    <Chart ComponentName="chartDashboardItem3" Name="Revenue and Expenses" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense">
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+        <Measure DataMember="revenueTrailing12" Name="Revenue" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="expenseTrailing12" DefaultId="DataItem2">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false">
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple Name="Trailing 12 Month Revenue" ShowPointMarkers="true" SeriesType="Area">
+              <Value DefaultId="DataItem0" />
+            </Simple>
+            <Simple Name="Trailing 12 month expenses" ShowPointMarkers="true" SeriesType="Area">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+    </Chart>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false" />
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="revenueTrailing12" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" Color="-373941">
+      <MeasureKey>
+        <Definition DataMember="expenseTrailing12" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenueexpense" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="grossProfitTrailing12" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem1" Weight="33.8962973564922">
+        <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="20.737327188940093" />
+        <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="37.795275590551178" />
+      </LayoutGroup>
+      <LayoutItem DashboardItem="cardDashboardItem1" Weight="19.81747831772406" />
+      <LayoutGroup Orientation="Vertical" Weight="80.182521682275947">
+        <LayoutItem DashboardItem="chartDashboardItem3" Weight="44.580329329650553" />
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="20.407076211911161" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

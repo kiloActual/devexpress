@@ -1,0 +1,267 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true"></Connection>
+      <Query Type="SelectQuery" Name="employeeturnover">
+        <Tables>
+          <Table Name="employeeturnover" X="30" Y="30" Width="125" Height="193" />
+          <Table Name="fiscal" X="185" Y="30" Width="125" Height="157" />
+          <Table Name="employee" X="340" Y="30" Width="125" Height="283" />
+          <Relation Type="Inner" Parent="employeeturnover" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="fiscal" Nested="employee">
+            <KeyColumn Parent="datefrom" Nested="dateterminated" Operator="GreaterOrEqual" />
+            <KeyColumn Parent="dateto" Nested="dateterminated" Operator="LessOrEqual" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="employeeturnover" Name="fiscalid" />
+          <Column Table="employeeturnover" Name="numempsactivebeforeperiod" />
+          <Column Table="employeeturnover" Name="numempsactiveinperiod" />
+          <Column Table="employeeturnover" Name="numempsterminatedinperiod" />
+          <Column Table="employeeturnover" Name="numempshiredinperiod" />
+          <Column Table="employeeturnover" Name="numempsaverage" />
+          <Column Table="employeeturnover" Name="numempsterminatedlessthanoneyear" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="employee" Name="firstname" />
+          <Column Table="employee" Name="lastname" />
+          <Column Table="employee" Name="datehired" />
+          <Column Table="employee" Name="dateterminated" />
+          <Column Table="employee" Name="id" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="SQL Data Source 1">
+          <View Name="employeeturnover">
+            <Field Name="fiscalid" Type="Int32" />
+            <Field Name="numempsactivebeforeperiod" Type="Int32" />
+            <Field Name="numempsactiveinperiod" Type="Int32" />
+            <Field Name="numempsterminatedinperiod" Type="Int32" />
+            <Field Name="numempshiredinperiod" Type="Int32" />
+            <Field Name="numempsaverage" Type="Decimal" />
+            <Field Name="numempsterminatedlessthanoneyear" Type="Int32" />
+            <Field Name="description" Type="String" />
+            <Field Name="dateto" Type="DateTime" />
+            <Field Name="firstname" Type="String" />
+            <Field Name="lastname" Type="String" />
+            <Field Name="datehired" Type="DateTime" />
+            <Field Name="dateterminated" Type="DateTime" />
+            <Field Name="id" Type="Int32" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" />
+      <CalculatedFields>
+        <CalculatedField Name="Turnover Rate" Expression="ToDecimal([numempsterminatedinperiod])/ToDecimal([Average Number Employees])" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Average Number Employees" Expression="ToDecimal([numempsactivebeforeperiod]+[numempsactiveinperiod])/2" DataType="Auto" DataMember="employeeturnover" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Turnover Summary By Month" DataSource="dashboardSqlDataSource1" DataMember="employeeturnover">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Month" SortOrder="Descending" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+        <Dimension DataMember="numempsactivebeforeperiod" Name="Active Before Month" DefaultId="DataItem1" />
+        <Dimension DataMember="numempsactiveinperiod" Name="Active In Month" DefaultId="DataItem2" />
+        <Dimension DataMember="numempshiredinperiod" Name="Hired In Month" DefaultId="DataItem3" />
+        <Dimension DataMember="numempsterminatedinperiod" Name="Terminated In Month" SortOrder="Descending" DefaultId="DataItem4" />
+        <Dimension DataMember="numempsterminatedlessthanoneyear" Name="Less Than 1 Year" DefaultId="DataItem5" />
+        <Dimension DataMember="Turnover Rate" DefaultId="DataItem7">
+          <NumericFormat FormatType="Percent" Unit="Ones" />
+        </Dimension>
+        <Dimension DataMember="Average Number Employees" DefaultId="DataItem8">
+          <NumericFormat FormatType="Number" Unit="Ones" />
+        </Dimension>
+        <Dimension DataMember="dateto" Name="Month Only" DateTimeGroupInterval="Month" DefaultId="DataItem6" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 2" DataItem="DataItem5">
+          <FormatConditionValue Condition="Greater">
+            <IconSettings IconType="ShapeRedDiamond" />
+            <Value1 Type="System.Int32" Value="0" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Month and Year" Weight="118.52996943626897">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Month Only" Weight="56.82943740095088">
+          <Dimension DefaultId="DataItem6" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Turnover Rate" Weight="99.0455908988001">
+          <Dimension DefaultId="DataItem7" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Active Before Month" Weight="53.5820409780394">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Active In Month" Weight="56.82943740095088">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Hired In Month" Weight="45.463549920760705">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Terminated In Month" Weight="63.32423024677383">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="84.43230699569844">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Less Than 1 Year" Weight="58.453135612406612">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions ColumnWidthMode="Manual" />
+    </Grid>
+    <RangeFilter ComponentName="rangeFilterDashboardItem1" Name="Range Filter 1" DataSource="dashboardSqlDataSource1" DataMember="employeeturnover" SelectedDateTimePeriodIndex="Last 2 Years">
+      <DataItems>
+        <Measure DataMember="numempsactiveinperiod" DefaultId="DataItem0" />
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+      </DataItems>
+      <Argument DefaultId="DataItem1" />
+      <Series>
+        <Simple SeriesType="Line">
+          <Value DefaultId="DataItem0" />
+        </Simple>
+      </Series>
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 2 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 3 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-3" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 5 Years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-5" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </RangeFilter>
+    <Grid ComponentName="gridDashboardItem2" Name="Terminated Employees" DataSource="dashboardSqlDataSource1" DataMember="employeeturnover">
+      <DataItems>
+        <Dimension DataMember="firstname" DefaultId="DataItem0" />
+        <Dimension DataMember="lastname" DefaultId="DataItem1" />
+        <Dimension DataMember="datehired" DateTimeGroupInterval="None" DefaultId="DataItem2" />
+        <Dimension DataMember="dateterminated" DateTimeGroupInterval="None" DefaultId="DataItem3" />
+        <Dimension DataMember="id" DefaultId="DataItem4" />
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="First Name">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Last Name">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Date Hired">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Date Terminated">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Chart ComponentName="chartDashboardItem1" Name="Turnover" DataSource="dashboardSqlDataSource1" DataMember="employeeturnover">
+      <ColoringOptions UseGlobalColors="false" />
+      <DataItems>
+        <Dimension DataMember="dateto" SortOrder="Descending" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+        <Measure DataMember="numempsactiveinperiod" Name="Active In Month" SummaryType="Average" DefaultId="DataItem0" />
+        <Measure DataMember="numempshiredinperiod" Name="Hired In Month" SummaryType="Average" DefaultId="DataItem2" />
+        <Measure DataMember="numempsterminatedinperiod" Name="Terminated In Month" SummaryType="Average" DefaultId="DataItem3" />
+        <Measure DataMember="Turnover Rate" Name="Turnover Rate" SummaryType="Average" DefaultId="DataItem4">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <ColorScheme>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="employeeturnover" PaletteIndex="0">
+          <MeasureKey>
+            <Definition DataMember="numempsactiveinperiod" SummaryType="Average" />
+          </MeasureKey>
+        </Entry>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="employeeturnover" Color="-6824752">
+          <MeasureKey>
+            <Definition DataMember="numempshiredinperiod" SummaryType="Average" />
+          </MeasureKey>
+        </Entry>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="employeeturnover" Color="-794467957">
+          <MeasureKey>
+            <Definition DataMember="numempsterminatedinperiod" SummaryType="Average" />
+          </MeasureKey>
+        </Entry>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="employeeturnover" Color="-789556937">
+          <MeasureKey>
+            <Definition DataMember="Turnover Rate" SummaryType="Average" />
+          </MeasureKey>
+        </Entry>
+      </ColorScheme>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem0" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup Weight="85.667752442996743">
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="54.4256120527307" />
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="25.800376647834273" />
+        <LayoutItem DashboardItem="gridDashboardItem2" Weight="19.774011299435028" />
+      </LayoutGroup>
+      <LayoutItem DashboardItem="rangeFilterDashboardItem1" Weight="14.332247557003257" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

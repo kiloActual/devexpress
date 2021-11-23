@@ -1,0 +1,379 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="Crew Efficiency" IncludeMasterFilterState="false" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="crew">
+        <Tables>
+          <Table Name="crew" />
+          <Table Name="taskhist" />
+          <Table Name="project" />
+          <Table Name="branch" />
+          <Table Name="company" />
+          <Table Name="employee" Alias="salesemployee" />
+          <Table Name="employee" Alias="projectgmanageremployee" />
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="salesemployee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="projectgmanageremployee">
+            <KeyColumn Parent="projectmanageremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="crew">
+            <KeyColumn Parent="crewid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="crew" Name="id" />
+          <Column Table="crew" Name="name" />
+          <Column Table="taskhist" Name="projectid" />
+          <Column Table="taskhist" Name="projectgroupid" />
+          <Column Table="taskhist" Name="description" />
+          <Column Table="taskhist" Name="hoursbudget" />
+          <Column Table="taskhist" Name="hoursactual" />
+          <Column Table="taskhist" Name="datedone" />
+          <Column Table="taskhist" Name="numberincrew" />
+          <Column Table="taskhist" Name="complete" />
+          <Column Table="taskhist" Name="billtype" />
+          <Column Table="project" Name="name" Alias="project_name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="branchid" />
+          <Column Table="project" Name="salesemployeeid" />
+          <Column Table="project" Name="projectmanageremployeeid" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="salesemployee" Name="firstname" />
+          <Column Table="salesemployee" Name="lastname" />
+          <Column Table="projectgmanageremployee" Name="firstname" Alias="projectgmanageremployee_firstname" />
+          <Column Table="projectgmanageremployee" Name="lastname" Alias="projectgmanageremployee_lastname" />
+          <Column Table="taskhist" Name="workorderid" />
+          <Column Table="project" Name="profitcenterid" />
+          <Column Table="project" Name="id" Alias="project_id" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="hoursactualforcrew" Expression="[hoursactual]*[numberincrew]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskefficiency" Expression="iif([hoursactualforcrew]=0,0,[hoursbudgetadjustfort&amp;m]/[hoursactualforcrew])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="billtypetext" Expression="iif([billtype]='T','T&amp;M',iif([billtype]='Y','Occ','None'))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="budgetstatus" Expression="iif([hoursbudgetadjustfort&amp;m]=0,'No Budget','Ok')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursbudgetadjustfort&amp;m" Expression="iif([billtype]='T',[hoursactual],[hoursbudget])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="internalorclient" Expression="iif([clientid]=0,'Internal','Client')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewbudget_aggr" Expression="aggr(SUM([hoursbudgetadjustfort&amp;m]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewactual_aggr" Expression="aggr(SUM([hoursactualforcrew]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewefficiency" Expression="Iif([crewactual_aggr] = 0, 0, [crewbudget_aggr] / [crewactual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskefficiency_aggr" Expression="Iif([taskdescriptionactual_aggr] = 0, 0, &#xA;[taskdescriptionbudget_aggr] / [taskdescriptionactual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskdescriptionbudget_aggr" Expression="aggr(Sum([hoursbudgetadjustfort&amp;m]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskdescriptionactual_aggr" Expression="aggr(SUM([hoursactualforcrew]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewidname" Expression="ToStr([id]) + ' - ' + [name] " DataMember="crew" />
+        <CalculatedField Name="projectmanageractual" Expression="aggr(SUM([hoursactualforcrew]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectmanagerbudget" Expression="aggr(SUM([hoursbudgetadjustfort&amp;m]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectmanagerefficiency" Expression="Iif([projectmanageractual] = 0, 0 , &#xA;[projectmanagerbudget] / [projectmanageractual])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursvariance" Expression="[hoursbudgetadjustfort&amp;m] - [hoursactualforcrew]" DataType="Auto" DataMember="crew" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Tasks" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Dimension DataMember="crewidname" DefaultId="DataItem1" />
+        <Dimension DataMember="projectid" DefaultId="DataItem2">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Dimension DataMember="project_name" DefaultId="DataItem3" />
+        <Measure DataMember="hoursactualforcrew" Name="crewTaskHours" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="taskefficiency" DefaultId="DataItem8">
+          <NumericFormat FormatType="Percent" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Dimension DataMember="description" DefaultId="DataItem9" />
+        <Measure DataMember="hoursbudgetadjustfort&amp;m" Name="Hours Budget" DefaultId="DataItem13">
+          <NumericFormat FormatType="Number" Unit="Ones" />
+        </Measure>
+        <Dimension DataMember="workorderid" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Measure DataMember="hoursvariance" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="1" Unit="Ones" />
+        </Measure>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem4" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem2">
+          <FormatConditionValue>
+            <IconSettings IconType="IndicatorYellowExclamation" />
+            <Value1 Type="System.String" Value="No Budget" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2" DataItem="DataItem8">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.5" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 3" DataItem="DataItem8">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <IconSettings IconType="IndicatorYellowFlag" />
+            <Value1 Type="System.Decimal" Value="0.5" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Work Order ID" Weight="80.086992604416579">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Project Id" Weight="61.51609576860983">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Project Name" Weight="122.64529785314035">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Task Description" Weight="127.28802206209204">
+          <Dimension DefaultId="DataItem9" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Crew Name" Weight="83.18214207705104">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Weight="147.01959995013672">
+          <Measure DefaultId="DataItem13" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Actual" Weight="39.076262092010019">
+          <Measure DefaultId="DataItem7" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Variance" Weight="51.069966298468543">
+          <Measure DefaultId="DataItem0" />
+        </GridMeasureColumn>
+        <GridDimensionColumn Name="Efficiency" Weight="61.51609576860983">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Date Done" Weight="85.9333860527261">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Chart ComponentName="chartDashboardItem1" Name="Crews" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="crew" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="crewefficiency" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="name" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Efficiency by Crew" Logarithmic="true" />
+          <Series>
+            <Simple Name="Efficiency">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions OverlappingMode="Reposition" Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2" />
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX VisiblePointsCount="20" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Task Description" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem3" Name="Project Manager" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="projectgmanageremployee_lastname" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="Internal Or Client" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="internalorclient" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem2" Name="Efficiency by Task" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="crew" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem1" />
+        <Measure DataMember="taskefficiency_aggr" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Efficiency by Task" />
+          <Series>
+            <Simple Name="Efficiency by Task">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem5" Name="Group ID" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="projectgroupid" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem4" Name="Crews" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="crew" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="projectgmanageremployee_lastname" SortOrder="Descending" DefaultId="DataItem1" />
+        <Measure DataMember="projectmanagerefficiency" DefaultId="DataItem2">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Efficiency by Project Manager" Logarithmic="true" />
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem2" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2" />
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX VisiblePointsCount="20" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Project ID, Name" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="project_id" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Dimension DataMember="project_name" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" SelectedDateTimePeriodIndex="Last 7 Days">
+      <DataItems>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last 7 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-7" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 14 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-14" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 30 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-30" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="crewefficiency" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="taskefficiency_aggr" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13319197">
+      <MeasureKey>
+        <Definition DataMember="budgetstatus" SummaryType="Count" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-10782805">
+      <MeasureKey>
+        <Definition DataMember="projectmanagerefficiency" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup Orientation="Vertical" Weight="60.790695083321332">
+        <LayoutGroup Orientation="Vertical" Weight="29.535700436846572">
+          <LayoutGroup DashboardItem="groupDashboardItem1" Weight="49.3531972588188">
+            <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="23.694611514808479" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="32.494865307704615" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="18.71474391738332" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="40.304611097639892" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="25.034376341203419" />
+            <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="51.043004793912914" />
+          </LayoutGroup>
+          <LayoutGroup Weight="52.820602241417269">
+            <LayoutItem DashboardItem="chartDashboardItem2" Weight="52.422484456059266" />
+            <LayoutItem DashboardItem="chartDashboardItem4" Weight="46.34788770665503" />
+            <LayoutItem DashboardItem="chartDashboardItem1" Weight="55.992232363450782" />
+          </LayoutGroup>
+        </LayoutGroup>
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="31.800742113024818" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

@@ -1,0 +1,45 @@
+<Dashboard>
+  <Title Text="GL Categories" />
+  <DataSources>
+    <SqlDataSource Name="trailing12MonthGLProfitLoss" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="coa">
+        <Tables>
+          <Table Name="coa" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Relation Type="Inner" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="Inner" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="glcategory" Name="description" />
+          <Column Table="coa" Name="description" Alias="coa_description" />
+          <Column Table="coa" Name="id" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <TreeView ComponentName="treeViewDashboardItem1" Name="GL Categories" DataSource="sqlDataSource1" DataMember="coa" FilterString="Not Contains([DataItem0], 'icalibrate')">
+      <DataItems>
+        <Dimension DataMember="sort" DefaultId="DataItem0" />
+        <Dimension DataMember="description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </TreeView>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutItem DashboardItem="treeViewDashboardItem1" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

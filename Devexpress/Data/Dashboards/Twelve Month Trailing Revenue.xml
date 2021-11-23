@@ -1,0 +1,115 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="trailing12monthrevenuecompanycoa">
+        <Tables>
+          <Table Name="trailing12monthrevenuecompanycoa" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Relation Type="Inner" Parent="trailing12monthrevenuecompanycoa" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="trailing12monthrevenuecompanycoa" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="trailing12monthrevenuecompanycoa" Name="companyid" />
+          <Column Table="trailing12monthrevenuecompanycoa" Name="fiscalid" />
+          <Column Table="trailing12monthrevenuecompanycoa" Name="coaid" />
+          <Column Table="trailing12monthrevenuecompanycoa" Name="amount" />
+          <Column Table="trailing12monthrevenuecompanycoa" Name="twelvemo" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="company" Name="name" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Twelve Month Trailing Revenue" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenuecompanycoa">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="twelvemo" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="Revenue" SeriesType="Area">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Company" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenuecompanycoa" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenuecompanycoa" SelectedDateTimePeriodIndex="This Year">
+      <DataItems>
+        <Dimension DataMember="dateto" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Two Years Ago">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="-2" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="trailing12monthrevenuecompanycoa" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="twelvemo" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem1" Weight="142.39923484891958">
+        <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="9.9674427172723732" />
+        <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="33.763929988352238" />
+      </LayoutGroup>
+      <LayoutItem DashboardItem="chartDashboardItem1" Weight="157.38839259242357" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

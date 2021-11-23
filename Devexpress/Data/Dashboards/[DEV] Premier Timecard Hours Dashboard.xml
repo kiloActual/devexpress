@@ -1,0 +1,917 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="[DEV] Premier Timecard Hours Dashboard" IncludeMasterFilterState="false" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="crew">
+        <Tables>
+          <Table Name="crew" />
+          <Table Name="taskhist" />
+          <Table Name="project" />
+          <Table Name="branch" />
+          <Table Name="company" />
+          <Table Name="employee" Alias="salesEmployee" />
+          <Table Name="employee" Alias="projectgmanageremployee" />
+          <Table Name="employee" Alias="supervisorEmployee" />
+          <Table Name="profitcenter" />
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="salesEmployee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="projectgmanageremployee">
+            <KeyColumn Parent="projectmanageremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="crew" Nested="taskhist">
+            <KeyColumn Parent="id" Nested="crewid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="supervisorEmployee">
+            <KeyColumn Parent="supervisoremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="profitcenter">
+            <KeyColumn Parent="profitcenterid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="crew" Name="id" />
+          <Column Table="crew" Name="name" />
+          <Column Table="taskhist" Name="projectid" />
+          <Column Table="taskhist" Name="projectgroupid" />
+          <Column Table="taskhist" Name="description" />
+          <Column Table="taskhist" Name="hoursbudget" />
+          <Column Table="taskhist" Name="hoursactual" />
+          <Column Table="taskhist" Name="datedone" Alias="date" />
+          <Column Table="taskhist" Name="numberincrew" />
+          <Column Table="taskhist" Name="complete" />
+          <Column Table="taskhist" Name="billType" />
+          <Column Table="project" Name="name" Alias="project_name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="branchid" />
+          <Column Table="project" Name="salesemployeeid" />
+          <Column Table="project" Name="projectmanageremployeeid" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="salesEmployee" Name="firstName" />
+          <Column Table="salesEmployee" Name="lastName" />
+          <Column Table="projectgmanageremployee" Name="firstName" Alias="projectgManagerEmployee_firstName" />
+          <Column Table="projectgmanageremployee" Name="lastName" Alias="projectgManagerEmployee_lastName" />
+          <Column Table="taskhist" Name="workOrderId" />
+          <Column Table="project" Name="id" Alias="project_Id" />
+          <Column Table="taskhist" Name="hoursBudgetOriginal" />
+          <Column Table="supervisorEmployee" Name="firstName" Alias="employee_firstName" />
+          <Column Table="supervisorEmployee" Name="lastName" Alias="employee_lastName" />
+          <Column Table="profitcenter" Name="id" Alias="profitCenter_Id" />
+          <Column Table="profitcenter" Name="description" Alias="profitCenter_description" />
+        </Columns>
+      </Query>
+      <Query Type="SelectQuery" Name="payrolldetail">
+        <Tables>
+          <Table Name="payrolldetail" />
+          <Table Name="project" />
+          <Table Name="branch" />
+          <Table Name="company" />
+          <Table Name="fiscal" />
+          <Table Name="profitcenter" />
+          <Relation Type="Inner" Parent="payrolldetail" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="Inner" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+            <KeyColumn Parent="companyid" Nested="companyid" />
+          </Relation>
+          <Relation Type="Inner" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="payrolldetail" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="profitcenter">
+            <KeyColumn Parent="profitcenterid" Nested="id" />
+            <KeyColumn Parent="companyid" Nested="companyid" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="payrolldetail" Name="date" />
+          <Column Table="payrolldetail" Name="hours" />
+          <Column Table="payrolldetail" Name="regot" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="payrolldetail" Name="fiscalid" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="id" />
+          <Column Table="payrolldetail" Name="postedstatus" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="branch" Name="id" Alias="branch_Id" />
+          <Column Table="profitcenter" Name="id" Alias="profitCenter_Id" />
+          <Column Table="profitcenter" Name="description" Alias="profitCenter_description" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="name" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="hoursActualForCrew" Expression="[hoursactual]*[numberincrew]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskEfficiency" Expression="iif([hoursActualForCrew]=0,0,[hoursBudgetAdjustForT&amp;M]/[hoursActualForCrew])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="billTypeText" Expression="iif([billType]='T','T&amp;M',iif([billType]='Y','Occ','None'))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="budgetStatus" Expression="iif([hoursBudgetAdjustForT&amp;M]=0,'No Budget','Ok')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursBudgetAdjustForT&amp;M" Expression="iif([billType]='T',[hoursActualForCrew],[hoursbudget])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="internalOrClient" Expression="iif([clientid]=0,'Internal','Client')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewBudget_aggr" Expression="aggr(SUM([productionBudgetHours]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewActual_aggr" Expression="aggr(SUM([productionActualHours]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewEfficiency" Expression="Iif([crewActual_aggr] = 0, 0, [crewBudget_aggr] / [crewActual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskEfficiency_aggr" Expression="Iif([taskDescriptionActual_aggr] = 0, 0, &#xA;[taskDescriptionBudget_aggr] / [taskDescriptionActual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskDescriptionBudget_aggr" Expression="aggr(Sum([productionBudgetHours]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskDescriptionActual_aggr" Expression="aggr(SUM([productionActualHours]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewidName" Expression="ToStr([id]) + ' - ' + [name] " DataMember="crew" />
+        <CalculatedField Name="projectManagerActual" Expression="aggr(SUM([productionActualHours]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectManagerBudget" Expression="aggr(SUM([productionBudgetHours]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectManagerEfficiency" Expression="Iif([projectManagerActual] = 0, 0 , &#xA;[projectManagerBudget] / [projectManagerActual])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursVariance" Expression="[hoursBudgetAdjustForT&amp;M] - [hoursActualForCrew]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursInternal" Expression="Iif([internalOrClient] = 'Internal', [hoursActualForCrew] , 0 )" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursProduction" Expression="Iif([internalOrClient] = 'Client', [hoursActualForCrew] , 0)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="percentInternal" Expression="IIf(SUM([hoursActualForCrew]) = 0, 0, SUM([hoursInternal]) / SUM(([hoursActualForCrew])))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name=".Internal Time Target" Expression="/* Please change this number to reflect your internal time goals as an organization&#xA;The format needs to be 0.00 in order to reflect properly on the dashboard */&#xA;&#xA;MAX(0.22)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="isComplete" Expression="Iif([complete]=True, 'Complete', 'Not Complete')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionActualHours" Expression="Iif([internalOrClient] = 'Client' &amp;&amp; [description] != 'Travel', [hoursActualForCrew] , 0 )" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionBudgetHours" Expression="Iif([internalOrClient]= 'Client' &amp;&amp; [description] != 'Travel' , [hoursBudgetAdjustForT&amp;M], 0)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionHoursVariance" Expression="[productionActualHours] - [productionBudgetHours]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionHoursVariancePercent" Expression="Iif(SUM([productionBudgetHours])=0,0 ,&#xA;SUM([productionHoursVariance])/SUM([productionBudgetHours]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travel_premier" Expression="Iif( [description]  = 'Travel', [hoursActualForCrew] , 0 ) &#xA;" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travelBudget_premier" Expression="Iif( [description]  = 'Travel', [hoursbudget] , 0 ) &#xA;" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travel_variance" Expression="[travelBudget_premier] - [travel_premier]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travel_percent_premier" Expression="IIf(SUM([hoursActualForCrew]) = 0, 0, SUM([travel_premier]) / SUM(([hoursActualForCrew])))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="regular_hours" Expression="Iif([regot] = 'R' Or IsNullOrEmpty([regot]), [hours],0 )" DataType="Auto" DataMember="payrolldetail" />
+        <CalculatedField Name="overtime_hours" Expression="Iif([regot] = 'O',[hours] ,0 )" DataType="Auto" DataMember="payrolldetail" />
+        <CalculatedField Name="internal_hours" Expression="Iif([clientid] = 0 ,[hours] ,0 )" DataType="Auto" DataMember="payrolldetail" />
+        <CalculatedField Name="productionBudgetHours_YTD" Expression="filter(SUM([productionBudgetHours]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionActualHours_YTD" Expression="filter(SUM([productionActualHours]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travelBudget_premier_YTD" Expression="filter(SUM([travelBudget_premier]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travel_premier_YTD" Expression="filter(SUM([travel_premier]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="totalBudget_YTD" Expression="filter(SUM([hoursBudgetAdjustForT&amp;M]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursActual_YTD" Expression="filter(SUM([hoursActualForCrew]), IsYearToDate([date]))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionHoursVariance_YTD" Expression="[productionBudgetHours_YTD] - [productionActualHours_YTD]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="travelVariance_YTD" Expression="[travelBudget_premier_YTD] - [travel_premier_YTD]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="this_year" Expression="GetYear(Today())" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="overtime_percent" Expression="Iif(SUM([regular_hours]) = 0 , 0 , SUM([overtime_hours])/ SUM([hours]) )" DataType="Auto" DataMember="payrolldetail" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="Complete" ParentContainer="dashboardTabPage3" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="isComplete" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Group Description" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="groupdescription" Name="Group Description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem3" Name="Profit Center" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="profitCenter_Id" Name="Profit Center" DefaultId="DataItem0" />
+        <Dimension DataMember="profitCenter_description" Name="Profit Center Description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem5" Name="crew" ParentContainer="dashboardTabPage3" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="crewidName" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem6" Name="Branch" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="branch_name" Name="Branch" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem7" Name="Company" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="company_name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem9" Name="Task Description" ParentContainer="dashboardTabPage3" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem2" Name="Date Filter" ParentContainer="dashboardTabPage1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" ArrangementMode="Vertical" SelectedDateTimePeriodIndex="Last Week">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Yesterday">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Week">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="2 Weeks ago">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-3" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Chart ComponentName="chartDashboardItem1" Name="Hours Chart" ParentContainer="dashboardTabPage4" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Dimension DataMember="date" Name="Week " DateTimeGroupInterval="WeekYear" DefaultId="DataItem0" />
+        <Measure DataMember="productionHoursVariancePercent" DefaultId="DataItem1">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="percentInternal" DefaultId="DataItem2">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Measure DataMember="travel_percent_premier" DefaultId="DataItem3">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="% of Wkly" SeriesType="SplineArea">
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+            <Simple Name="% Internal" SeriesType="Line">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple Name="% travel" SeriesType="Line">
+              <Value DefaultId="DataItem3" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Weekly Summary">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage2" Name="Reg OT" />
+        <Page ComponentName="dashboardTabPage4" Name="Charts" />
+        <Page ComponentName="dashboardTabPage3" Name="crew Analysis">
+          <InteractivityOptions IsMasterFilter="false" />
+        </Page>
+        <Page ComponentName="dashboardTabPage5" Name="Year to date" />
+      </Pages>
+    </TabContainer>
+    <Pivot ComponentName="pivotDashboardItem1" Name="% OT" ParentContainer="dashboardTabPage2" DataSource="dashboardSqlDataSource1" DataMember="payrolldetail">
+      <DataItems>
+        <Dimension DataMember="date" Name="Date" SortOrder="Descending" DateTimeGroupInterval="WeekYear" DefaultId="DataItem0" />
+        <Measure DataMember="overtime_percent" Name="OT %" DefaultId="DataItem6">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="branch_name" Name="Branch" DefaultId="DataItem5" />
+      </DataItems>
+      <Columns>
+        <Column DefaultId="DataItem5" />
+      </Columns>
+      <Rows>
+        <Row DefaultId="DataItem0" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem6" />
+      </Values>
+      <AutoExpandRowGroups>true</AutoExpandRowGroups>
+      <LayoutType>Tabular</LayoutType>
+    </Pivot>
+    <Grid ComponentName="gridDashboardItem4" Name="crew Hours Analysis - Weekly" ParentContainer="dashboardTabPage3" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Measure DataMember="productionActualHours" Name="crewTaskHours" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionBudgetHours" Name="Hours Budget" DefaultId="DataItem13">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionBudgetHours" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="name" DefaultId="DataItem4" />
+        <Measure DataMember="travel_premier" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travelBudget_premier" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travel_variance" DefaultId="DataItem3" />
+        <Measure DataMember="travelBudget_premier" DefaultId="DataItem5" />
+        <Measure DataMember="travel_premier" DefaultId="DataItem6" />
+        <Measure DataMember="hoursActualForCrew" DefaultId="DataItem8" />
+        <Measure DataMember="productionActualHours" DefaultId="DataItem9">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionHoursVariance" DefaultId="DataItem10" />
+        <Measure DataMember="productionBudgetHours" DefaultId="DataItem11" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem2">
+          <FormatConditionValue>
+            <IconSettings IconType="IndicatorYellowExclamation" />
+            <Value1 Type="System.String" Value="No Budget" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.49" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 3">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <IconSettings IconType="IndicatorYellowFlag" />
+            <Value1 Type="System.Decimal" Value="0.5" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="crew" Weight="77.433165668123053">
+          <Dimension DefaultId="DataItem4" />
+          <Totals>
+            <Total />
+          </Totals>
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Prod Bdgt " Weight="51.069966298468543">
+          <Measure DefaultId="DataItem0" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Prod Act" Weight="77.335839041398131">
+          <Measure DefaultId="DataItem9" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Wkly" Weight="77.595376712664589">
+          <ActualValue DefaultId="DataItem10" />
+          <TargetValue DefaultId="DataItem11" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Travel Bdgt" Weight="78.5037585620972">
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Travel Act" Weight="77.919798801747675">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Travel" Weight="77.883751902960654">
+          <ActualValue DefaultId="DataItem3" />
+          <TargetValue DefaultId="DataItem5" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Total Bdgt" Weight="147.01959995013672">
+          <Measure DefaultId="DataItem13" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Total Act" Weight="39.076262092010019">
+          <Measure DefaultId="DataItem7" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="Travel %" Weight="78.204168781067381">
+          <ActualValue DefaultId="DataItem6" />
+          <TargetValue DefaultId="DataItem8" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date" ParentContainer="dashboardTabPage4" DataSource="dashboardSqlDataSource1" DataMember="crew" SelectedDateTimePeriodIndex="Year to Date">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Grid ComponentName="gridDashboardItem2" Name="Branch Hours Analysis - Weekly" ParentContainer="dashboardTabPage1" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="productionActualHours" Name="crewTaskHours" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionBudgetHours" Name="Hours Budget" DefaultId="DataItem13">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionBudgetHours" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="branch_name" DefaultId="DataItem4" />
+        <Measure DataMember="travel_premier" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travelBudget_premier" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travel_variance" DefaultId="DataItem3" />
+        <Measure DataMember="travelBudget_premier" DefaultId="DataItem5" />
+        <Measure DataMember="travel_premier" DefaultId="DataItem6" />
+        <Measure DataMember="hoursActualForCrew" DefaultId="DataItem8" />
+        <Measure DataMember="productionActualHours" DefaultId="DataItem9">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionHoursVariance" DefaultId="DataItem10" />
+        <Measure DataMember="productionBudgetHours" DefaultId="DataItem11" />
+        <Dimension DataMember="profitCenter_description" DefaultId="DataItem12" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem2">
+          <FormatConditionValue>
+            <IconSettings IconType="IndicatorYellowExclamation" />
+            <Value1 Type="System.String" Value="No Budget" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.49" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 3">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <IconSettings IconType="IndicatorYellowFlag" />
+            <Value1 Type="System.Decimal" Value="0.5" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Branch" Weight="77.433165668123053">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Profit Center" Weight="78.2041687810674">
+          <Dimension DefaultId="DataItem12" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Prod Bdgt " Weight="51.069966298468543">
+          <Measure DefaultId="DataItem0" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Prod Act" Weight="77.335839041398131">
+          <Measure DefaultId="DataItem9" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Wkly" Weight="77.595376712664589">
+          <ActualValue DefaultId="DataItem10" />
+          <TargetValue DefaultId="DataItem11" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Travel Bdgt" Weight="78.5037585620972">
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Travel Act" Weight="77.919798801747675">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Travel" Weight="77.883751902960654">
+          <ActualValue DefaultId="DataItem3" />
+          <TargetValue DefaultId="DataItem5" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Total Bdgt" Weight="147.01959995013672">
+          <Measure DefaultId="DataItem13" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Total Act" Weight="39.076262092010019">
+          <Measure DefaultId="DataItem7" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="Travel %" Weight="78.204168781067381">
+          <ActualValue DefaultId="DataItem6" />
+          <TargetValue DefaultId="DataItem8" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Grid ComponentName="gridDashboardItem3" Name="Year to Date" ParentContainer="dashboardTabPage5" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Dimension DataMember="branch_name" DefaultId="DataItem4" />
+        <Measure DataMember="travel_premier_YTD" DefaultId="DataItem3" />
+        <Measure DataMember="travelBudget_premier_YTD" DefaultId="DataItem5" />
+        <Measure DataMember="travel_premier_YTD" DefaultId="DataItem6" />
+        <Measure DataMember="hoursActual_YTD" DefaultId="DataItem8" />
+        <Measure DataMember="productionBudgetHours_YTD" DefaultId="DataItem12">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionActualHours_YTD" DefaultId="DataItem14">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travelBudget_premier_YTD" DefaultId="DataItem15">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="travel_premier_YTD" DefaultId="DataItem16">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem17" />
+        <Measure DataMember="totalBudget_YTD" DefaultId="DataItem18">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="hoursActual_YTD" DefaultId="DataItem19">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionHoursVariance_YTD" DefaultId="DataItem0" />
+        <Measure DataMember="productionBudgetHours_YTD" DefaultId="DataItem9" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1">
+          <FormatConditionValue>
+            <IconSettings IconType="IndicatorYellowExclamation" />
+            <Value1 Type="System.String" Value="No Budget" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.49" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 3">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <IconSettings IconType="IndicatorYellowFlag" />
+            <Value1 Type="System.Decimal" Value="0.5" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Branch" Weight="51.956072692370562">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Prod Budget" Weight="121.23083628219797">
+          <Measure DefaultId="DataItem12" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Prod Actual" Weight="117.46590347840302">
+          <Measure DefaultId="DataItem14" />
+          <Totals>
+            <Total />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Wkly" Weight="82.678488493205109">
+          <ActualValue DefaultId="DataItem0" />
+          <TargetValue DefaultId="DataItem9" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Travel Bdgt" Weight="109.18305131005408">
+          <Measure DefaultId="DataItem15" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Travel Act" Weight="88.099427608802259">
+          <Measure DefaultId="DataItem16" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% of Travel" Weight="56.47399205692453">
+          <ActualValue DefaultId="DataItem3" />
+          <TargetValue DefaultId="DataItem5" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Total Bdgt" Weight="83.531653881339011">
+          <Measure DefaultId="DataItem18" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Total Act" Weight="84.479615423710015">
+          <Measure DefaultId="DataItem19" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="Travel %" Weight="49.697113010093588">
+          <ActualValue DefaultId="DataItem6" />
+          <TargetValue DefaultId="DataItem8" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <SparklineArgument DefaultId="DataItem17" />
+      <GridOptions />
+    </Grid>
+    <TextBox ComponentName="textBoxDashboardItem1" Name="Text Box 1" ShowCaption="false" ParentContainer="dashboardTabPage5" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Measure DataMember="this_year" SummaryType="Max" DefaultId="DataItem0">
+          <NumericFormat FormatType="General" />
+        </Measure>
+      </DataItems>
+      <Text>{\rtf1\deff0{\fonttbl{\f0 Calibri;}{\f1 Segoe UI;}{\f2 Malgun Gothic;}}{\colortbl ;\red0\green0\blue255 ;\red255\green255\blue255 ;}{\*\defchp \f1\fs22}{\stylesheet {\ql Normal;}{\*\cs1\f1\fs22 Default Paragraph Font;}{\*\cs2\ul\f1\fs22\cf1 Hyperlink;}{\*\ts3\tsrowd\fs22\ql\tsvertalt\tscellcbpat2\tscellpct0\cltxlrtb Normal Table;}}{\*\listoverridetable}{\info}\nouicompat\splytwnine\htmautsp\expshrtn\spltpgpar\deftab720\sectd\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\headery720\footery720\pgwsxn12240\pghsxn15840\cols1\colsx720\pard\plain\ql{\field\dxfldcodeview{\*\fldinst{\f2\fs32\cf0 docvariable DataItem0}}{\fldrslt{\f2\fs32\cf0 this_year (Max)}}}{\f2\fs32\cf0  Year to date hours }\f2\fs32\cf0\par}</Text>
+      <Values>
+        <Value DefaultId="DataItem0" />
+      </Values>
+    </TextBox>
+    <DateFilter ComponentName="dateFilterDashboardItem3" Name="Date Filter" ParentContainer="dashboardTabPage2" DataSource="dashboardSqlDataSource1" DataMember="payrolldetail" IsMasterFilterCrossDataSource="true" ArrangementMode="Vertical" SelectedDateTimePeriodIndex="Year to Date">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Yesterday">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Week">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="2 Weeks ago">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-3" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 3 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-2" />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <DateFilter ComponentName="dateFilterDashboardItem4" Name="Date Filter" ParentContainer="dashboardTabPage3" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" ArrangementMode="Vertical" SelectedDateTimePeriodIndex="Last Week">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Yesterday">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Week">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="2 Weeks ago">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-3" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="-2" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Pivot ComponentName="pivotDashboardItem2" Name="Reg OT" ParentContainer="dashboardTabPage2" DataSource="dashboardSqlDataSource1" DataMember="payrolldetail">
+      <DataItems>
+        <Measure DataMember="regular_hours" Name="Reg" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="overtime_hours" Name="OT" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="internal_hours" Name="Internal" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="hours" Name="Total" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="date" SortOrder="Descending" DateTimeGroupInterval="WeekYear" DefaultId="DataItem0" />
+        <Measure DataMember="overtime_percent" Name="OT %" DefaultId="DataItem6">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="branch_name" DefaultId="DataItem5" />
+      </DataItems>
+      <Columns>
+        <Column DefaultId="DataItem5" />
+      </Columns>
+      <Rows>
+        <Row DefaultId="DataItem0" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem1" />
+        <Value DefaultId="DataItem2" />
+        <Value DefaultId="DataItem3" />
+        <Value DefaultId="DataItem4" />
+        <Value DefaultId="DataItem6" />
+      </Values>
+      <AutoExpandRowGroups>true</AutoExpandRowGroups>
+      <ValuesPosition>Rows</ValuesPosition>
+      <LayoutType>Tabular</LayoutType>
+    </Pivot>
+    <Pivot ComponentName="pivotDashboardItem3" Name="Weekly Payroll data check" ParentContainer="dashboardTabPage2" DataSource="dashboardSqlDataSource1" DataMember="payrolldetail">
+      <DataItems>
+        <Dimension DataMember="date" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+        <Dimension DataMember="regot" DefaultId="DataItem1" />
+        <Measure DataMember="hours" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="date" DateTimeGroupInterval="WeekYear" DefaultId="DataItem3" />
+      </DataItems>
+      <Columns>
+        <Column DefaultId="DataItem1" />
+      </Columns>
+      <Rows>
+        <Row DefaultId="DataItem3" />
+        <Row DefaultId="DataItem0" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem2" />
+      </Values>
+    </Pivot>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="crewEfficiency" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="taskEfficiency_aggr" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13319197">
+      <MeasureKey>
+        <Definition DataMember="budgetStatus" SummaryType="Count" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-10782805">
+      <MeasureKey>
+        <Definition DataMember="projectManagerEfficiency" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem1" Weight="16.685638608705567">
+        <LayoutGroup Weight="18.794775741004123">
+          <LayoutItem DashboardItem="comboBoxDashboardItem7" Weight="19.275699098999997" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem6" Weight="31.504822985012996" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="28.98917546299862" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="58.67682770975226" />
+        </LayoutGroup>
+      </LayoutGroup>
+      <LayoutTabContainer DashboardItem="tabContainerDashboardItem1" Weight="113.87735864858513">
+        <LayoutTabPage DashboardItem="dashboardTabPage2">
+          <LayoutItem DashboardItem="dateFilterDashboardItem3" Weight="19.372342399326744" />
+          <LayoutItem DashboardItem="pivotDashboardItem2" Weight="37.184183794337457" />
+          <LayoutItem DashboardItem="pivotDashboardItem1" Weight="30.721536908772798" />
+          <LayoutItem DashboardItem="pivotDashboardItem3" Weight="42.365276995248166" />
+        </LayoutTabPage>
+        <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage1">
+          <LayoutGroup Weight="11.508354356561865">
+            <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="2.7992197321540409" />
+            <LayoutItem DashboardItem="gridDashboardItem2" Weight="14.21628504566911" />
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage5">
+          <LayoutGroup Orientation="Vertical" Weight="66.119782641469115">
+            <LayoutItem DashboardItem="textBoxDashboardItem1" Weight="7.8871981523268619" />
+            <LayoutItem DashboardItem="gridDashboardItem3" Weight="124.35236713061137" />
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage4">
+          <LayoutGroup Orientation="Vertical" Weight="100.84090484451031">
+            <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="100.84090484451031" />
+            <LayoutItem DashboardItem="chartDashboardItem1" Weight="100.84090484451031" />
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage3">
+          <LayoutItem DashboardItem="dateFilterDashboardItem4" Weight="7.3893092983415887" />
+          <LayoutGroup Orientation="Vertical" Weight="64.646044088095408">
+            <LayoutGroup Weight="20.643925063555624">
+              <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="20.643925063555624" />
+              <LayoutItem DashboardItem="comboBoxDashboardItem9" Weight="38.939849323446296" />
+              <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="12.828156789634498" />
+            </LayoutGroup>
+            <LayoutItem DashboardItem="gridDashboardItem4" Weight="66.528202965175709" />
+          </LayoutGroup>
+        </LayoutTabPage>
+      </LayoutTabContainer>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

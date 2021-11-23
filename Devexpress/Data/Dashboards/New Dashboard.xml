@@ -1,0 +1,28 @@
+<Dashboard>
+  <Title Text="New Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="payrolldetail" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="payrolldetail">
+        <Tables>
+          <Table Name="payrolldetail" />
+          <Table Name="employee" />
+          <Relation Type="LeftOuter" Parent="payrolldetail" Nested="employee">
+            <KeyColumn Parent="empid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="payrolldetail" Name="hours" />
+          <Column Table="payrolldetail" Name="fiscalid" />
+          <Column Table="payrolldetail" Name="grosspay" />
+          <Column Table="payrolldetail" Name="regot" />
+          <Column Table="payrolldetail" Name="postedstatus" />
+          <Column Table="employee" Name="firstname" />
+          <Column Table="employee" Name="lastname" />
+          <Column Table="payrolldetail" Name="date" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" />
+    </SqlDataSource>
+  </DataSources>
+</Dashboard>

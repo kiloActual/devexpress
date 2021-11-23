@@ -1,0 +1,279 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="Client Lifetime Value with Job Info" IncludeMasterFilterState="false" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="client">
+        <Tables>
+          <Table Name="gl" />
+          <Table Name="project" />
+          <Table Name="client" />
+          <Table Name="fiscal" />
+          <Table Name="coa" />
+          <Table Name="clientlifetimevalue" />
+          <Relation Type="LeftOuter" Parent="gl" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="client">
+            <KeyColumn Parent="clientid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="gl" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="gl" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="client" Nested="clientlifetimevalue">
+            <KeyColumn Parent="id" Nested="clientid" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="gl" Name="coaid" />
+          <Column Table="gl" Name="amount" />
+          <Column Table="gl" Name="fiscalid" />
+          <Column Table="project" Name="name" />
+          <Column Table="client" Name="businessnameorsurname" />
+          <Column Table="client" Name="accountopendate" />
+          <Column Table="client" Name="accountcloseddate" />
+          <Column Table="client" Name="city" />
+          <Column Table="client" Name="stateprovince" />
+          <Column Table="client" Name="zippostcode" />
+          <Column Table="client" Name="id" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="openorclosed" />
+          <Column Table="fiscal" Name="datefrom" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="coa" Name="description" Alias="coa_description" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="clientlifetimevalue" Name="lifetimevalue" />
+          <Column Table="gl" Name="projectid" />
+          <Column Table="gl" Name="projectgroupid" />
+          <Column Table="project" Name="groupdescription" />
+        </Columns>
+        <Filter>[coa.statementtype] = 4</Filter>
+        <GroupFilter></GroupFilter>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="tenure" Expression="DateDiffYear([accountopendate], Iif([accountcloseddate] Is Null, Today(), [accountcloseddate]))" DataType="Auto" DataMember="client" />
+        <CalculatedField Name="account status" Expression="Iif([accountcloseddate] Is Null, 'Active', 'Closed')" DataType="Auto" DataMember="client" />
+        <CalculatedField Name="average value per year" Expression="Iif([tenure] &lt;&gt; 0, [lifetimevalue] / [tenure], 0)" DataType="Auto" DataMember="client" />
+        <CalculatedField Name="revenue by job" Expression="[amount] * -1" DataType="Decimal" DataMember="client" />
+        <CalculatedField Name="project group name" Expression="ToStr([projectid]) + '-' + [name] + ' - ' + [groupdescription]" DataType="Auto" DataMember="client" />
+        <CalculatedField Name="averagelifetimevalue_usethis" Expression="Avg([lifetimevalue])" DataType="Decimal" DataMember="client" />
+        <CalculatedField Name="roundedlifetimevalue" Expression="Round([lifetimevalue], -3 ) " DataType="Auto" DataMember="client" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="top 5 clients" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="client">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="businessnameorsurname" Name="client name" SortOrder="Descending" ColoringMode="None" SortByMeasure="DataItem3" DefaultId="DataItem1" />
+        <Measure DataMember="averagelifetimevalue_usethis" Name="client lifetime value" SummaryType="Average" DefaultId="DataItem3" />
+        <Measure DataMember="tenure" Name="client tenure" SummaryType="Average" DefaultId="DataItem2" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem3" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple PlotOnSecondaryAxis="true" SeriesType="Point">
+              <Value DefaultId="DataItem2" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="pane 2" />
+      </Panes>
+      <AxisX LimitVisiblePoints="true" VisiblePointsCount="5" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="account status" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="client" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="account status" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Card ComponentName="cardDashboardItem2" Name="number clients" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="client" IsMasterFilterCrossDataSource="true">
+      <InteractivityOptions MasterFilterMode="Multiple" IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="lifetimevalue" SummaryType="CountDistinct" DefaultId="DataItem0" />
+        <Measure DataMember="revenue by job" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="tenure" SummaryType="Average" DefaultId="DataItem2" />
+        <Dimension DataMember="dateto" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem4" />
+      </DataItems>
+      <Card Name="clients">
+        <ActualValue DefaultId="DataItem0" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="revenue by project">
+        <ActualValue DefaultId="DataItem1" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="average tenure (years)">
+        <ActualValue DefaultId="DataItem2" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <SparklineArgument DefaultId="DataItem4" />
+    </Card>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="year account opened" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="client" IsMasterFilterCrossDataSource="true" SelectedDateTimePeriodIndex="Last Year">
+      <DataItems>
+        <Dimension DataMember="accountopendate" Name="year account opened" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="this quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="this year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="last year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="last 5 years">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-5" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="clients" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="client" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="businessnameorsurname" Name="business or surname" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem2" Name="projects" DataSource="dashboardSqlDataSource1" DataMember="client">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="revenue by job" Name="revenue by project" DefaultId="DataItem0" />
+        <Dimension DataMember="project group name" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="pane 1">
+          <AxisY>
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="client" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="averagelifetimevalue_usethis" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="client" Color="-219580">
+      <MeasureKey>
+        <Definition DataMember="tenure" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="client" Color="-14507843">
+      <MeasureKey>
+        <Definition DataMember="revenue by job" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem1" Weight="13.948187283401317">
+        <LayoutGroup Weight="12.558764271323035">
+          <LayoutGroup Weight="12.558764271323035">
+            <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="12.222968435191403" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="12.558764271323035" />
+          </LayoutGroup>
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="12.222968435191403" />
+        </LayoutGroup>
+      </LayoutGroup>
+      <LayoutItem DashboardItem="cardDashboardItem2" Weight="24.50619305806536" />
+      <LayoutGroup Weight="75.49380694193465">
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="48.359480240354785" />
+        <LayoutItem DashboardItem="chartDashboardItem2" Weight="96.3936061793983" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

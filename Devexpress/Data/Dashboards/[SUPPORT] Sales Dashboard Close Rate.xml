@@ -1,0 +1,267 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="[SUPPORT] Sales Dashboard Close Rate" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="salesgoalsummary">
+        <Tables>
+          <Table Name="salesgoalsummary" />
+          <Table Name="fiscal" />
+          <Table Name="employee" />
+          <Table Name="branch" />
+          <Relation Type="Inner" Parent="salesgoalsummary" Nested="employee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="salesgoalsummary" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="employee" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="employee" Name="firstname" />
+          <Column Table="employee" Name="lastname" />
+          <Column Table="salesgoalsummary" Name="goaltype" />
+          <Column Table="salesgoalsummary" Name="quantity" />
+          <Column Table="salesgoalsummary" Name="averageeach" />
+          <Column Table="salesgoalsummary" Name="hourseach" />
+          <Column Table="salesgoalsummary" Name="closingpercent" />
+          <Column Table="salesgoalsummary" Name="daystoclose" />
+          <Column Table="salesgoalsummary" Name="grossmargin" />
+          <Column Table="salesgoalsummary" Name="numproposedinfiscal" />
+          <Column Table="salesgoalsummary" Name="amountproposedinfiscal" />
+          <Column Table="salesgoalsummary" Name="hoursproposedinfiscal" />
+          <Column Table="salesgoalsummary" Name="numsoldinfiscal" />
+          <Column Table="salesgoalsummary" Name="amountsoldinfiscal" />
+          <Column Table="salesgoalsummary" Name="hourssoldinfiscal" />
+          <Column Table="branch" Name="name" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="goalSalesAmount" Expression="([quantity]*[closingpercent])*[averageeach]*0.01" DataType="Decimal" DataMember="salesgoalsummary" />
+        <CalculatedField Name="goalProposalAmount" Expression="[quantity]*[averageeach]" DataType="Auto" DataMember="salesgoalsummary" />
+        <CalculatedField Name="Sales Performance" Expression="[goalSalesAmount] - [amountsoldinfiscal]" DataType="Auto" DataMember="salesgoalsummary" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Fiscal Period" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Fiscal Period" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Sales Person" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="lastname" Name="Sales Person" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Range" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" IsMasterFilterCrossDataSource="true" SelectedDateTimePeriodIndex="This Year">
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Date Range" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Month">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Next Month">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="2" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Grid ComponentName="gridDashboardItem2" Name="Grid 1" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary">
+      <DataItems>
+        <Dimension DataMember="goaltype" DefaultId="DataItem0" />
+        <Measure DataMember="amountproposedinfiscal" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="amountsoldinfiscal" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="numsoldinfiscal" DefaultId="DataItem3" />
+        <Measure DataMember="numproposedinfiscal" DefaultId="DataItem4" />
+        <Measure DataMember="goalProposalAmount" DefaultId="DataItem5" />
+        <Measure DataMember="goalSalesAmount" DefaultId="DataItem6" />
+        <Measure DataMember="Sales Performance" DefaultId="DataItem7" />
+        <Measure DataMember="numproposedinfiscal" DefaultId="DataItem8" />
+        <Measure DataMember="numsoldinfiscal" DefaultId="DataItem9" />
+        <Measure DataMember="amountsoldinfiscal" DefaultId="DataItem10" />
+        <Measure DataMember="amountproposedinfiscal" DefaultId="DataItem11" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem7" />
+      </HiddenMeasures>
+      <FormatRules>
+        <GridItemFormatRule Name="Format Rule 1" DataItem="DataItem2" DataItemApplyTo="DataItem2">
+          <FormatConditionExpression Expression="[DataItem2] &lt; [DataItem6]">
+            <IconSettings IconType="IndicatorCircledYellowExclamation" />
+          </FormatConditionExpression>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Goal Type">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Sales Goal">
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Amount Sold">
+          <Measure DefaultId="DataItem2" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Proposal Goal Amount">
+          <Measure DefaultId="DataItem5" />
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Amount Proposed">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="Close Rate [NUM">
+          <ActualValue DefaultId="DataItem3" />
+          <TargetValue DefaultId="DataItem4" />
+          <DeltaOptions ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem8" />
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem9" />
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="Close Rate AMOUNT">
+          <ActualValue DefaultId="DataItem10" />
+          <TargetValue DefaultId="DataItem11" />
+          <DeltaOptions ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <GridOptions WordWrap="true" />
+    </Grid>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Filters">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-1529244">
+      <MeasureKey>
+        <Definition DataMember="goalAmountToSubmit" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-538737">
+      <MeasureKey>
+        <Definition DataMember="amountSubmitted" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-1676233">
+      <MeasureKey>
+        <Definition DataMember="amountSold" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-12474136">
+      <MeasureKey>
+        <Definition DataMember="goalAmountToPropose" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-15588450">
+      <MeasureKey>
+        <Definition DataMember="amountProposed" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-680648">
+      <MeasureKey>
+        <Definition DataMember="quantity" SummaryType="Count" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="projectEstimateSoldFiscal" Color="-2518205">
+      <MeasureKey>
+        <Definition DataMember="numberProposed" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" Color="-13319197">
+      <MeasureKey>
+        <Definition DataMember="goalProposalAmount" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" Color="-13598480">
+      <MeasureKey>
+        <Definition DataMember="amountproposedinfiscal" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="amountsoldinfiscal" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="salesgoalsummary" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="goalSalesAmount" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Weight="100">
+      <LayoutGroup Orientation="Vertical" Weight="100">
+        <LayoutGroup Weight="57.831566730148978">
+          <LayoutGroup Orientation="Vertical" DashboardItem="groupDashboardItem1" Weight="12.451366072861962">
+            <LayoutGroup>
+              <LayoutGroup Orientation="Vertical" Weight="36.865021770682148">
+                <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="36.865021770682148" />
+                <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="46.734397677793908" />
+                <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="16.364812419146183" />
+              </LayoutGroup>
+            </LayoutGroup>
+          </LayoutGroup>
+          <LayoutItem DashboardItem="gridDashboardItem2" Weight="83.4469180897237" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

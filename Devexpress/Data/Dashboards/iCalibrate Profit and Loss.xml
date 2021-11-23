@@ -1,0 +1,299 @@
+<Dashboard>
+  <Title Visible="false" Text="" />
+  <DataSources>
+    <SqlDataSource Name="glcategory" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="glcategory">
+        <Tables>
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Table Name="coa" />
+          <Table Name="profitlosssummarybyprojectwithbudget" />
+          <Table Name="fiscal" />
+          <Relation Type="Inner" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="Inner" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybyprojectwithbudget" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybyprojectwithbudget" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="coa" Name="id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="glcategory" Name="description" Alias="glCategory_description" />
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="profitlosssummarybyprojectwithbudget" Name="amount" />
+          <Column Table="fiscal" Name="datefrom" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="fiscal" Name="id" Alias="fiscal_Id" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="jobcostcategory" />
+        </Columns>
+        <Filter>[fiscal.datefrom] &gt;= #2019-01-01#</Filter>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="amountYTD" Expression="Iif(IsThisYear([datefrom]) = True, [amount] , 0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="amountLastYear" Expression="Iif(IsThisYear(AddYears([datefrom],1)) = True, [amount] , 0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="revenueYTD" Expression="Iif(Contains([glCategory_description], 'Revenue'), [amountYTD] , 0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalRevenueYTD" Expression="Total(SUM([revenueYTD]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="amountLastYearToDate" Expression="Iif(IsYearToDate(AddYears([datefrom], 1)) = True, [amount] , 0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="revenueLastYearToDate" Expression="Iif(Contains([glCategory_description], 'Revenue'), [amountLastYearToDate] , 0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalRevenueLastYearToDate" Expression="Total(SUM([revenueLastYearToDate]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="revenueLastYear" Expression="Iif([jobcostcategory] In('I'), [amountLastYear],0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalRevenueLastYear" Expression="Total(SUM([revenueLastYear]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="expenseYTD" Expression="Iif([jobcostcategory] In('I'), 0 , [amountYTD] )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalExpenseYTD" Expression="Total(SUM([expenseYTD]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="directExpenseYTD" Expression="Iif([jobcostcategory] In('L', 'B', 'E', 'S'), [amountYTD] , 0)&#xA;" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalDirectExpenseYTD" Expression="Total(SUM([directExpenseYTD]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="grossProfitYTD" Expression="[totalRevenueYTD] - [totalDirectExpenseYTD]" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="netProfitYTD" Expression="[revenueYTD] - [expenseYTD]" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="grossProfitMarginYTD" Expression="Iif([totalRevenueYTD] = 0, 0, [totalGrossProfitYTD] / [totalRevenueYTD])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalGrossProfitYTD" Expression="Total([grossProfitYTD])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalNetProfitYTD" Expression="Total(SUM([netProfitYTD]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="netProfitMarginYTD" Expression="Iif([totalRevenueYTD] = 0, 0, [totalNetProfitYTD] / [totalRevenueYTD])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="amountTrailing12Month" Expression="Iif(DateDiffMonth([datefrom],Today()) &lt;= 12, [amount] ,0 )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="revenueTrailing12Month" Expression="Iif(Contains([glCategory_description], 'Revenue') , [amountTrailing12Month] , 0)" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalRevenueTrailing12Month" Expression="Total(SUM([revenueTrailing12Month]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="date" Expression="LocalDateTimeLastYear()" DataType="DateTime" DataMember="glcategory" />
+        <CalculatedField Name="directExpenseLastYear" Expression="Iif([jobcostcategory] In('L', 'B', 'E', 'S'), [amountLastYear] , 0)" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="directExpenseTrailing12Month" Expression="Iif([jobcostcategory] In('L', 'B', 'E', 'S'), [amountTrailing12Month] , 0)" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalDirectExpenseLastYear" Expression="Total(SUM([directExpenseLastYear]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalDirectExpenseTrailing12Month" Expression="Total(SUM([directExpenseTrailing12Month]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="grossProfitLastYear" Expression="[totalRevenueLastYear] - [totalDirectExpenseLastYear]" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="grossProfitMarginLastYear" Expression="Iif([totalRevenueLastYear] = 0, 0, [totalGrossProfitLastYear] / [totalRevenueLastYear])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalGrossProfitLastYear" Expression="Total([grossProfitLastYear])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="expenseLastYear" Expression="Iif([jobcostcategory] In('I'), 0 , [amountLastYear] )" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="netProfitLastYear" Expression="[totalRevenueLastYear] - [totalExpenseLastYear]" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="netProfitMarginLastYear" Expression="Iif([totalRevenueLastYear] = 0, 0, [totalNetProfitLastYear] / [totalRevenueLastYear])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalExpenseLastYear" Expression="Total(SUM([expenseLastYear]))" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="totalNetProfitLastYear" Expression="Total([netProfitLastYear])" DataType="Auto" DataMember="glcategory" />
+        <CalculatedField Name="Revenue " Expression="Iif([statementtype]=4,[amount] ,0 )" DataType="Auto" DataMember="glcategory" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="P&amp;L Line Items" ParentContainer="dashboardTabPage1" DataSource="sqlDataSource1" DataMember="glcategory">
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="sort" SummaryType="Max" DefaultId="DataItem0" />
+        <Dimension DataMember="glCategory_description" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+        <Dimension DataMember="description" SortByMeasure="DataItem0" DefaultId="DataItem2" />
+        <Measure DataMember="amountLastYear" DefaultId="DataItem3">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="amountYTD" DefaultId="DataItem6">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="totalRevenueYTD" DefaultId="DataItem7" />
+        <Measure DataMember="amountYTD" DefaultId="DataItem8" />
+        <Measure DataMember="amountLastYearToDate" DefaultId="DataItem9">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="totalRevenueLastYearToDate" DefaultId="DataItem11" />
+        <Measure DataMember="amountLastYearToDate" DefaultId="DataItem12" />
+        <Measure DataMember="totalRevenueLastYear" DefaultId="DataItem4" />
+        <Measure DataMember="amountLastYear" DefaultId="DataItem5" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem0" />
+      </HiddenMeasures>
+      <GridColumns>
+        <GridDimensionColumn Name="GL Category Description" Weight="86.797826325301415">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="GL Description" Weight="58.159775641592418">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Amount YTD" Weight="50.16238014903783">
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% Revenue YTD" Weight="32.971901558637221">
+          <ActualValue DefaultId="DataItem8" />
+          <TargetValue DefaultId="DataItem7" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Amount Last YTD" Weight="36.353635051830786">
+          <Measure DefaultId="DataItem9" />
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% Revenue Last YTD" Weight="50.444191273470622">
+          <ActualValue DefaultId="DataItem12" />
+          <TargetValue DefaultId="DataItem11" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+        <GridMeasureColumn Name="Amount Last Year Total" Weight="41.708046416053925">
+          <Measure DefaultId="DataItem3" />
+        </GridMeasureColumn>
+        <GridDeltaColumn Name="% Revenue Last Year Total" Weight="51.899555063912786">
+          <ActualValue DefaultId="DataItem5" />
+          <TargetValue DefaultId="DataItem4" />
+          <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
+        </GridDeltaColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Fiscal Date " ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="glcategory">
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Calendar Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Profit and Loss Performance" />
+        <Page ComponentName="dashboardTabPage2" Name="Charts" />
+      </Pages>
+    </TabContainer>
+    <Chart ComponentName="chartDashboardItem1" Name="Revenue Trailing 12" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="glcategory">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Dimension DataMember="datefrom" DateTimeGroupInterval="MonthYear" DefaultId="DataItem1" />
+        <Measure DataMember="Revenue " DefaultId="DataItem3" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY>
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem3" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Card ComponentName="cardDashboardItem1" Name="Profitability" ParentContainer="dashboardTabPage1" DataSource="sqlDataSource1" DataMember="glcategory">
+      <DataItems>
+        <Measure DataMember="grossProfitLastYear" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="grossProfitMarginLastYear" DefaultId="DataItem1">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="netProfitLastYear" DefaultId="DataItem4">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="netProfitMarginLastYear" SummaryType="Count" DefaultId="DataItem2">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+      </DataItems>
+      <Card Name="Gross Profit Last Year">
+        <ActualValue DefaultId="DataItem0" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Gross Profit Margin Last Year">
+        <ActualValue DefaultId="DataItem1" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Net Profit Last Year">
+        <ActualValue DefaultId="DataItem4" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Net Profit Margin Last Year">
+        <ActualValue DefaultId="DataItem2" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+    </Card>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false" ParentContainer="dashboardTabPage2" />
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="glcategory" Color="-10121811">
+      <MeasureKey>
+        <Definition DataMember="amountTrailing12Month" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutTabContainer DashboardItem="tabContainerDashboardItem1">
+        <LayoutTabPage DashboardItem="dashboardTabPage1">
+          <LayoutGroup Orientation="Vertical" Weight="1.7125132931584544">
+            <LayoutItem DashboardItem="gridDashboardItem1" Weight="2.8499216355697792" />
+            <LayoutItem DashboardItem="cardDashboardItem1" Weight="0.57510495074712953" />
+          </LayoutGroup>
+        </LayoutTabPage>
+        <LayoutTabPage DashboardItem="dashboardTabPage2">
+          <LayoutGroup DashboardItem="groupDashboardItem1" Weight="0.64113785557986869">
+            <LayoutGroup Orientation="Vertical">
+              <LayoutItem DashboardItem="dateFilterDashboardItem1" />
+              <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.97009864011823066" />
+            </LayoutGroup>
+          </LayoutGroup>
+        </LayoutTabPage>
+      </LayoutTabContainer>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

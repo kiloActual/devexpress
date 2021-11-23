@@ -1,0 +1,69 @@
+<Dashboard>
+  <Title Text="[DEV] CCP" />
+  <DataSources>
+    <SqlDataSource Name="project" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="project">
+        <Tables>
+          <Table Name="contractperformanceperiod" />
+        </Tables>
+        <Columns>
+          <Column Table="contractperformanceperiod" Name="id" />
+          <Column Table="contractperformanceperiod" Name="projectid" />
+          <Column Table="contractperformanceperiod" Name="projectgroupid" />
+          <Column Table="contractperformanceperiod" Name="fiscalidstart" />
+          <Column Table="contractperformanceperiod" Name="fiscalidend" />
+          <Column Table="contractperformanceperiod" Name="contractamount" />
+          <Column Table="contractperformanceperiod" Name="installmentamount" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Contract Performance Periods" DataSource="sqlDataSource1" DataMember="project">
+      <DataItems>
+        <Measure DataMember="contractamount" DefaultId="DataItem0">
+          <NumericFormat FormatType="General" />
+        </Measure>
+        <Dimension DataMember="id" DefaultId="DataItem3" />
+        <Measure DataMember="installmentamount" DefaultId="DataItem4">
+          <NumericFormat FormatType="General" />
+        </Measure>
+        <Dimension DataMember="fiscalidend" DefaultId="DataItem1" />
+        <Dimension DataMember="fiscalidstart" DefaultId="DataItem2" />
+        <Dimension DataMember="projectid" DefaultId="DataItem6" />
+        <Dimension DataMember="projectgroupid" DefaultId="DataItem5" />
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem6" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem0" />
+        </GridMeasureColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem4" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutItem DashboardItem="gridDashboardItem1" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

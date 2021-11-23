@@ -1,0 +1,200 @@
+﻿<Dashboard>
+  <Title Text="Accounts Receivable Aging" />
+  <DataSources>
+    <SqlDataSource Name="arinvoice" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="arinvoice">
+        <Tables>
+          <Table Name="employee" />
+          <Table Name="company" />
+          <Table Name="client" />
+          <Table Name="projectidwithname" />
+          <Table Name="openarinvoice" />
+          <Relation Type="LeftOuter" Parent="openarinvoice" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="openarinvoice" Nested="client">
+            <KeyColumn Parent="clientid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="openarinvoice" Nested="employee">
+            <KeyColumn Parent="salesid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="openarinvoice" Nested="projectidwithname">
+            <KeyColumn Parent="projectid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="employee" Name="lastname" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="client" Name="businessnameorsurname" />
+          <Column Table="employee" Name="firstname" />
+          <Column Table="projectidwithname" Name="name" />
+          <Column Table="openarinvoice" Name="id" />
+          <Column Table="openarinvoice" Name="invoicetype" />
+          <Column Table="openarinvoice" Name="companyid" />
+          <Column Table="openarinvoice" Name="clientid" />
+          <Column Table="openarinvoice" Name="projectid" />
+          <Column Table="openarinvoice" Name="invoicedate" />
+          <Column Table="openarinvoice" Name="invoicefiscal" />
+          <Column Table="openarinvoice" Name="invoicepaidinfulldate" />
+          <Column Table="openarinvoice" Name="invoicepaidinfullfiscal" />
+          <Column Table="openarinvoice" Name="amountnotax" />
+          <Column Table="openarinvoice" Name="amounttaxable" />
+          <Column Table="openarinvoice" Name="amounttax" />
+          <Column Table="openarinvoice" Name="amountincludingtax" />
+          <Column Table="openarinvoice" Name="amountreceived" />
+          <Column Table="openarinvoice" Name="invoicecategory" />
+          <Column Table="openarinvoice" Name="salesid" />
+          <Column Table="projectidwithname" Name="id" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="age" Expression="Today() - [invoicedate]" DataType="Integer" DataMember="arinvoice" />
+        <CalculatedField Name="agingdays" Expression="Iif([age] &lt; 31, '0-30',&#xA;Iif([age] &gt; 30 &amp;&amp; [age] &lt; 61, '30-60',&#xA;Iif([age] &gt; 60 &amp;&amp; [age] &lt; 91, '60-90',&#xA;Iif([age] &gt; 90 &amp;&amp; [age] &lt; 121, '90-120',&#xA;'120+'))))" DataMember="arinvoice" />
+        <CalculatedField Name="agingdayssort" Expression="Iif([agingdays] = '0-30', '1',&#xA;Iif([agingdays] = '30-60', '2',&#xA;Iif([agingdays] = '60-90', '3',&#xA;Iif([agingdays] = '90-120', '4',&#xA; '5'))))&#xA;" DataType="Auto" DataMember="arinvoice" />
+        <CalculatedField Name="salesnamelastfirst" Expression="Iif(IsNullOrEmpty([lastname]),'.Not Assigned', [lastname] + ', ' + [firstname])" DataType="Auto" DataMember="arinvoice" />
+        <CalculatedField Name="amountowing" Expression="[amountincludingtax] - [amountreceived]" DataType="Auto" DataMember="arinvoice" />
+        <CalculatedField Name="projectidname" Expression="ToStr([projectid]) + ' - ' + [name]" DataType="Auto" DataMember="arinvoice" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Amount Outstanding by Sales Person" DataSource="sqlDataSource1" DataMember="arinvoice">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="salesnamelastfirst" Name="Sales Person Name" DefaultId="DataItem0" />
+        <Measure DataMember="amountowing" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="age" SummaryType="Average" DefaultId="DataItem2" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" />
+          <SecondaryAxisY TitleVisible="false" />
+          <Series>
+            <Simple Name="Amount Owing">
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Average Age" PlotOnSecondaryAxis="true" SeriesType="Point">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Pivot ComponentName="pivotDashboardItem1" Name="AR Aging " DataSource="sqlDataSource1" DataMember="arinvoice">
+      <DataItems>
+        <Dimension DataMember="agingdays" Name="Aging Days" SortByMeasure="DataItem4" DefaultId="DataItem1" />
+        <Measure DataMember="amountowing" Name="Amount Owing" DefaultId="DataItem2">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="businessnameorsurname" DefaultId="DataItem3" />
+        <Dimension DataMember="projectidname" DefaultId="DataItem5" />
+        <Measure DataMember="agingdayssort" Name="Aging Days Sort" SummaryType="Max" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem4" />
+      </HiddenMeasures>
+      <Columns>
+        <Column DefaultId="DataItem1" />
+      </Columns>
+      <Rows>
+        <Row DefaultId="DataItem3" />
+        <Row DefaultId="DataItem5" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem2" />
+      </Values>
+      <AutoExpandColumnGroups>true</AutoExpandColumnGroups>
+      <ShowColumnTotals>false</ShowColumnTotals>
+      <LayoutType>Tabular</LayoutType>
+    </Pivot>
+    <Chart ComponentName="chartDashboardItem2" Name="Top Clients Owing" DataSource="sqlDataSource1" DataMember="arinvoice" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="businessnameorsurname" SortOrder="Descending" TopNEnabled="true" TopNCount="10" TopNMeasure="DataItem1" DefaultId="DataItem0" />
+        <Measure DataMember="amountowing" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" />
+          <Series>
+            <Simple Name="Amount Owing">
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX Reverse="true" />
+    </Chart>
+    <Card ComponentName="cardDashboardItem1" Name="Summary of Invoices Outstanding" DataSource="sqlDataSource1" DataMember="arinvoice">
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="amountowing" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="agingdays" SortByMeasure="DataItem2" DefaultId="DataItem1" />
+        <Measure DataMember="agingdayssort" SummaryType="Max" DefaultId="DataItem2" />
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem2" />
+      </HiddenMeasures>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem1" />
+      </SeriesDimensions>
+      <Card Name="Amount Owing">
+        <ActualValue DefaultId="DataItem0" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" MaxWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+    </Card>
+  </Items>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="arinvoice" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="amountowing" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="arinvoice" Color="-219580">
+      <MeasureKey>
+        <Definition DataMember="age" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup>
+        <LayoutItem DashboardItem="pivotDashboardItem1" Weight="0.77571549185258259" />
+        <LayoutGroup Orientation="Vertical" Weight="0.834193191629376">
+          <LayoutItem DashboardItem="cardDashboardItem1" Weight="0.35583881661747668" />
+          <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.76680525135229094" />
+          <LayoutItem DashboardItem="chartDashboardItem2" Weight="0.97912104470575256" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

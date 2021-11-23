@@ -1,0 +1,77 @@
+<Dashboard>
+  <Title Text="[DEV] projectestimate" />
+  <DataSources>
+    <SqlDataSource Name="projectestimate" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="projectestimate">
+        <Tables>
+          <Table Name="projectestimate" />
+        </Tables>
+        <Columns>
+          <Column Table="projectestimate" Name="id" />
+          <Column Table="projectestimate" Name="branchid" />
+          <Column Table="projectestimate" Name="clientid" />
+          <Column Table="projectestimate" Name="projectclientname" />
+          <Column Table="projectestimate" Name="archived" />
+          <Column Table="projectestimate" Name="projecttype" />
+          <Column Table="projectestimate" Name="leadsource" />
+          <Column Table="projectestimate" Name="name" />
+          <Column Table="projectestimate" Name="description" />
+          <Column Table="projectestimate" Name="countrycode" />
+          <Column Table="projectestimate" Name="salescycleid" />
+          <Column Table="projectestimate" Name="cost" />
+          <Column Table="projectestimate" Name="price" />
+          <Column Table="projectestimate" Name="hours" />
+          <Column Table="projectestimate" Name="salesemployeeid" />
+          <Column Table="projectestimate" Name="estimatoremployeeid" />
+          <Column Table="projectestimate" Name="designeremployeeid" />
+          <Column Table="projectestimate" Name="supervisoremployeeid" />
+          <Column Table="projectestimate" Name="dateentered" />
+          <Column Table="projectestimate" Name="dateproposed" />
+          <Column Table="projectestimate" Name="datesold" />
+          <Column Table="projectestimate" Name="addressline1" />
+          <Column Table="projectestimate" Name="addressline2" />
+          <Column Table="projectestimate" Name="city" />
+          <Column Table="projectestimate" Name="stateprovince" />
+          <Column Table="projectestimate" Name="zippostcode" />
+          <Column Table="projectestimate" Name="goaltype" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="projectestimate" DataSource="sqlDataSource1" DataMember="projectestimate">
+      <DataItems>
+        <Dimension DataMember="branchid" DefaultId="DataItem0" />
+        <Measure DataMember="cost" DefaultId="DataItem1" />
+        <Dimension DataMember="description" DefaultId="DataItem2" />
+        <Dimension DataMember="id" DefaultId="DataItem3" />
+        <Dimension DataMember="name" DefaultId="DataItem4" />
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn Weight="25.318621248165208">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="14.965834893961635">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="203.88520524371108">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Weight="55.830338614162066">
+          <Measure DefaultId="DataItem1" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions ColumnWidthMode="Manual" />
+    </Grid>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutItem DashboardItem="gridDashboardItem1" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

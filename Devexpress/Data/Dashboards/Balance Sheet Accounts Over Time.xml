@@ -1,0 +1,187 @@
+﻿<Dashboard>
+  <Title Text="GL Accounts over time" />
+  <DataSources>
+    <SqlDataSource Name="GL" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="GL">
+        <Tables>
+          <Table Name="balancesheetfiscalsummarybycompany" />
+          <Table Name="coa" />
+          <Table Name="company" />
+          <Table Name="fiscal" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="company" Name="name" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="balancesheetfiscalsummarybycompany" Name="runningtotal" />
+          <Column Table="coa" Name="id" />
+          <Column Table="glcategory" Name="description" Alias="glcategory_description" />
+          <Column Table="glcategoryglaccountlink" Name="categoryid" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Adjusted Running Total" Expression="Iif([statementtype] = 2, [runningtotal] * -1, [runningtotal])" DataType="Auto" DataMember="GL" />
+        <CalculatedField Name="glidname" Expression="ToStr([id]) + ' - ' + ToStr([description])" DataType="Auto" DataMember="GL" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="" ShowCaption="false" DataSource="sqlDataSource1" DataMember="GL">
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem0" />
+        <Measure DataMember="Adjusted Running Total" SummaryType="Average" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Dimension DataMember="id" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="description">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Running Total">
+          <Measure DefaultId="DataItem1" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="gl account id" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="GL" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="glidname" Name="gl account id, name" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem1" Name="GL Accounts over time" DataSource="sqlDataSource1" DataMember="GL">
+      <DataItems>
+        <Measure DataMember="Adjusted Running Total" SummaryType="Average" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Dimension DataMember="description" DefaultId="DataItem1" />
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem2" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem1" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY>
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple ShowPointMarkers="true" SeriesType="Line">
+              <Value DefaultId="DataItem0" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend OutsidePosition="TopCenterHorizontal" />
+    </Chart>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="GL" SelectedDateTimePeriodIndex="Last 12 months">
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Fiscal Date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 12 months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-14" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Account Category" ParentContainer="groupDashboardItem1" DataSource="sqlDataSource1" DataMember="GL" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="glcategory_description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical" Weight="1.8521143906977908">
+        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="0.14788560930220918">
+          <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.840720025753416" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.85415741385772781" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="2.6585754321229054" />
+        </LayoutGroup>
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="2.3443364795290496" />
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="1.0950782438362912" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

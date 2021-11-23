@@ -1,0 +1,167 @@
+<Dashboard>
+  <Title Text="[DEV] Crew Member Time" />
+  <DataSources>
+    <SqlDataSource Name="taskhist" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="taskhist">
+        <Tables>
+          <Table Name="taskhist" />
+          <Table Name="crewemployee" />
+          <Table Name="employee" />
+          <Table Name="crew" />
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="crewemployee">
+            <KeyColumn Parent="crewid" Nested="crewid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="crewemployee" Nested="employee">
+            <KeyColumn Parent="employeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="crewemployee" Nested="crew">
+            <KeyColumn Parent="crewid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="employee" Name="firstname" />
+          <Column Table="crewemployee" Name="isleader" />
+          <Column Table="employee" Name="lastname" />
+          <Column Table="crewemployee" Name="crewid" />
+          <Column Table="taskhist" Name="crewid" Alias="taskHist_crewId" />
+          <Column Table="crew" Name="id" />
+          <Column Table="crew" Name="name" />
+          <Column Table="employee" Name="id" Alias="employee_Id" />
+          <Column Table="taskhist" Name="hoursactual" />
+          <Column Table="taskhist" Name="datedone" />
+          <Column Table="taskhist" Name="workorderid" />
+          <Column Table="taskhist" Name="numberincrew" />
+          <Column Table="taskhist" Name="valuework" />
+          <Column Table="taskhist" Name="description" />
+          <Column Table="taskhist" Name="projectid" />
+          <Column Table="taskhist" Name="projectgroupid" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="crewEmployeeLastFirst" Expression="[lastname] + ', ' + [firstname]" DataType="Auto" DataMember="taskhist" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Pivot ComponentName="pivotDashboardItem1" Name="TEST THIS PLEASE" DataSource="sqlDataSource1" DataMember="taskhist">
+      <DataItems>
+        <Measure DataMember="hoursactual" DefaultId="DataItem8">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+        <Dimension DataMember="name" DefaultId="DataItem5" />
+        <Dimension DataMember="crewEmployeeLastFirst" DefaultId="DataItem4" />
+        <Dimension DataMember="workorderid" Name="Work Order ID" DefaultId="DataItem1">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+      </DataItems>
+      <FormatRules>
+        <PivotItemFormatRule Name="Format Rule 1" DataItem="DataItem8" DataItemApplyTo="DataItem4">
+          <FormatConditionValue Condition="Greater">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="40" />
+          </FormatConditionValue>
+          <PivotItemFormatRuleLevel />
+        </PivotItemFormatRule>
+      </FormatRules>
+      <Columns>
+        <Column DefaultId="DataItem0" />
+      </Columns>
+      <Rows>
+        <Row DefaultId="DataItem4" />
+        <Row DefaultId="DataItem5" />
+        <Row DefaultId="DataItem1" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem8" />
+      </Values>
+    </Pivot>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter 1" DataSource="sqlDataSource1" DataMember="taskhist" SelectedDateTimePeriodIndex="This Week">
+      <DataItems>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Week">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Week" Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Week" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Grid ComponentName="gridDashboardItem2" Name="Grid 1" DataSource="sqlDataSource1" DataMember="taskhist">
+      <DataItems>
+        <Dimension DataMember="crewid" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" />
+        </Dimension>
+        <Dimension DataMember="employee_Id" DefaultId="DataItem1">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Dimension DataMember="firstname" DefaultId="DataItem2" />
+        <Dimension DataMember="lastname" DefaultId="DataItem3" />
+        <Dimension DataMember="name" DefaultId="DataItem4" />
+        <Dimension DataMember="isleader" DefaultId="DataItem5" />
+        <Measure DataMember="hoursactual" DefaultId="DataItem6">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="None" DefaultId="DataItem7" />
+        <Dimension DataMember="description" DefaultId="DataItem8" />
+        <Measure DataMember="valuework" DefaultId="DataItem9" />
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem6" />
+        </GridMeasureColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem7" />
+        </GridDimensionColumn>
+        <GridDimensionColumn>
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridMeasureColumn>
+          <Measure DefaultId="DataItem9" />
+        </GridMeasureColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical">
+        <LayoutItem DashboardItem="dateFilterDashboardItem1" />
+        <LayoutGroup>
+          <LayoutItem DashboardItem="gridDashboardItem2" Weight="0.80562703565248039" />
+          <LayoutItem DashboardItem="pivotDashboardItem1" Weight="1.1943729643475196" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

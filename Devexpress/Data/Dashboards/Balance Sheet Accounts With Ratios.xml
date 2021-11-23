@@ -1,0 +1,292 @@
+﻿<Dashboard>
+  <Title Text="Balance Sheet Accounts with Ratios" />
+  <DataSources>
+    <SqlDataSource Name="balancesheetfiscalsummarybycompany" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="balancesheetfiscalsummarybycompany">
+        <Tables>
+          <Table Name="balancesheetfiscalsummarybycompany" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="coa" Name="id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="accountcategory" />
+          <Column Table="balancesheetfiscalsummarybycompany" Name="runningtotal" />
+          <Column Table="fiscal" Name="id" Alias="fiscal_id" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="openorclosed" />
+          <Column Table="company" Name="name" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="glcategory" Name="description" Alias="glcategory_description" />
+          <Column Table="glcategory" Name="sort" />
+        </Columns>
+      </Query>
+      <Query Type="SelectQuery" Name="balancesheetfiscalsummary">
+        <Tables>
+          <Table Name="balancesheetfiscalsummary" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummary" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummary" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummary" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="balancesheetfiscalsummary" Name="amount" />
+          <Column Table="coa" Name="accountcategory" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="id" />
+          <Column Table="company" Name="name" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="fiscal" Name="openorclosed" />
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="glcategory" Name="description" Alias="glcategory_description" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="adjustedamount" Expression="Iif([statementtype] = 2, [amount] * -1, [amount])" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="adjustedrunningtotal" Expression="Iif([statementtype] = 2, [runningtotal] * -1, [runningtotal])" DataType="Auto" DataMember="balancesheetfiscalsummarybycompany" />
+        <CalculatedField Name="accountsreceivables" Expression="Iif(Contains([glcategory_description], 'Receivables'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="currentassets" Expression="Iif(Contains([glcategory_description], 'Current Assets'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="currentliabilities" Expression="Iif(Contains([glcategory_description], 'Current Liabilities'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="equity" Expression="Iif(Contains([glcategory_description], 'Equity'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="longtermliabilities" Expression="Iif(Contains([glcategory_description], 'Long Term Liabilities'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="cash" Expression="Iif(Contains([glcategory_description], 'Cash'), [adjustedamount], 0)" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="debttoequityratio" Expression="(SUM([currentliabilities]) + SUM([longTermliabilities])) /  SUM([equity])" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="currentratio" Expression="Iif(SUM([currentliabilities]) = 0, 0, SUM([currentassets]) / SUM([currentliabilities]))" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="quickratio" Expression="(SUM([cash]) + SUM([accountsreceivables])) / SUM([currentliabilities])" DataType="Auto" DataMember="balancesheetfiscalsummary" />
+        <CalculatedField Name="fiscaliddescription" Expression="ToStr([fiscal_id]) + ' - ' + [fiscal_description]" DataType="Auto" DataMember="balancesheetfiscalsummarybycompany" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Card ComponentName="cardDashboardItem1" Name="Category Cards" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummary" FilterString="[DataItem1] = 'Cash' Or [DataItem1] = 'Receivables'">
+      <DataItems>
+        <Measure DataMember="adjustedamount" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Dimension DataMember="glcategory_description" DefaultId="DataItem1" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem1" />
+      </SeriesDimensions>
+      <Card>
+        <ActualValue DefaultId="DataItem0" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" />
+        <LayoutTemplate MinWidth="50" MaxWidth="200" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+    </Card>
+    <Chart ComponentName="chartDashboardItem2" Name="Chart 1" ShowCaption="false" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" FilterString="[DataItem1] = 'Cash' Or [DataItem1] = 'Receivables' Or [DataItem1] = 'Payables'">
+      <DataItems>
+        <Measure DataMember="adjustedrunningtotal" DefaultId="DataItem2">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+        <Dimension DataMember="glcategory_description" DefaultId="DataItem1" />
+      </DataItems>
+      <SeriesDimensions>
+        <SeriesDimension DefaultId="DataItem1" />
+      </SeriesDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false">
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <Series>
+            <Simple ShowPointMarkers="true" SeriesType="Line">
+              <Value DefaultId="DataItem2" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <AxisX TitleVisible="true" Title="Cash vs Receivables vs. Payables" />
+    </Chart>
+    <Card ComponentName="cardDashboardItem2" Name="Ratios" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummary">
+      <DataItems>
+        <Measure DataMember="quickratio" DefaultId="DataItem1" />
+        <Measure DataMember="currentratio" DefaultId="DataItem2" />
+      </DataItems>
+      <Card Name="Quick Ratio">
+        <ActualValue DefaultId="DataItem1" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="50" MaxWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Current Ratio">
+        <ActualValue DefaultId="DataItem2" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="50" MaxWidth="270" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="true" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="true" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="true" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+    </Card>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Fiscal Period" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" SelectedDateTimePeriodIndex="Last 12 Months">
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last 12 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-12" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 24 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-24" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Pivot ComponentName="pivotDashboardItem1" Name="Pivot 1" ShowCaption="false" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummary">
+      <DataItems>
+        <Dimension DataMember="glcategory_description" DefaultId="DataItem0" />
+        <Measure DataMember="adjustedamount" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="description" DefaultId="DataItem3" />
+      </DataItems>
+      <Rows>
+        <Row DefaultId="DataItem0" />
+        <Row DefaultId="DataItem3" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem1" />
+      </Values>
+      <LayoutType>Tabular</LayoutType>
+    </Pivot>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Company" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" Name="company" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" Color="-13202228">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="glcategory_description" />
+          <Value Type="System.String" Value="Cash" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" Color="-219580">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="glcategory_description" />
+          <Value Type="System.String" Value="Payables" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" Color="-6764743">
+      <DimensionKeys>
+        <DimensionKey>
+          <Definition DataMember="glcategory_description" />
+          <Value Type="System.String" Value="Receivables" />
+        </DimensionKey>
+      </DimensionKeys>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical">
+      <LayoutGroup Orientation="Vertical">
+        <LayoutGroup Orientation="Vertical" Weight="0.52764297639357338">
+          <LayoutGroup Weight="0.74604950115576762">
+            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.365121421332573" />
+            <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="2.46720696130177" />
+          </LayoutGroup>
+          <LayoutGroup Weight="1.1001752438510013">
+            <LayoutItem DashboardItem="cardDashboardItem1" Weight="1.0654812997444709" />
+            <LayoutItem DashboardItem="cardDashboardItem2" Weight="1.0792046668928237" />
+          </LayoutGroup>
+        </LayoutGroup>
+        <LayoutGroup Weight="1.2241680398570687">
+          <LayoutItem DashboardItem="pivotDashboardItem1" Weight="0.57598921245453472" />
+          <LayoutItem DashboardItem="chartDashboardItem2" Weight="1.8737785667519868" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

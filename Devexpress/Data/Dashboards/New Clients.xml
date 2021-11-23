@@ -1,0 +1,192 @@
+<Dashboard>
+  <Title Text="Client Account Open History " />
+  <DataSources>
+    <SqlDataSource Name="client" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="projectbudget">
+        <Tables>
+          <Table Name="projectbudget" />
+          <Table Name="project" />
+          <Table Name="client" />
+          <Relation Type="Inner" Parent="projectbudget" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="Inner" Parent="project" Nested="client">
+            <KeyColumn Parent="clientid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="projectbudget" Name="originalbudgetamount" />
+          <Column Table="projectbudget" Name="projectid" />
+          <Column Table="projectbudget" Name="projectgroupid" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="name" />
+          <Column Table="client" Name="businessnameorsurname" />
+          <Column Table="client" Name="city" />
+          <Column Table="projectbudget" Name="coaid" />
+          <Column Table="client" Name="accountopendate" />
+          <Column Table="project" Name="profitcenterid" />
+          <Column Table="project" Name="city" Alias="project_city" />
+          <Column Table="client" Name="addressline1" />
+          <Column Table="client" Name="stateprovince" />
+          <Column Table="client" Name="zippostcode" />
+          <Column Table="client" Name="addressline2" />
+          <Column Table="client" Name="id" />
+          <Column Table="project" Name="projecttype" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Client Account Open Date" DataSource="sqlDataSource1" DataMember="projectbudget" SelectedDateTimePeriodIndex="This Year and Last">
+      <DataItems>
+        <Dimension DataMember="accountopendate" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last 30 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-30" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Second" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Year and Last">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <Grid ComponentName="gridDashboardItem1" Name="New Clients" DataSource="sqlDataSource1" DataMember="projectbudget">
+      <DataItems>
+        <Dimension DataMember="accountopendate" SortOrder="Descending" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+        <Dimension DataMember="businessnameorsurname" DefaultId="DataItem1" />
+        <Dimension DataMember="groupdescription" DefaultId="DataItem2" />
+        <Measure DataMember="originalbudgetamount" DefaultId="DataItem3">
+          <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="project_city" DefaultId="DataItem4" />
+        <Dimension DataMember="addressline1" DefaultId="DataItem5" />
+        <Dimension DataMember="stateprovince" DefaultId="DataItem6" />
+        <Dimension DataMember="zippostcode" DefaultId="DataItem7" />
+        <Dimension DataMember="addressline2" DefaultId="DataItem8" />
+        <Dimension DataMember="projecttype" DefaultId="DataItem9" />
+        <Dimension DataMember="id" DefaultId="DataItem10">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+      </DataItems>
+      <GridColumns>
+        <GridDimensionColumn Name="Account Open Date">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Client No.">
+          <Dimension DefaultId="DataItem10" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Client Name">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Group Description">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Job Type">
+          <Dimension DefaultId="DataItem9" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Amount">
+          <Measure DefaultId="DataItem3" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDimensionColumn Name="Address Line 1">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Address Line 2">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Town">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="State">
+          <Dimension DefaultId="DataItem6" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Zip Code">
+          <Dimension DefaultId="DataItem7" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions EnableBandedRows="true" ShowVerticalLines="false" />
+    </Grid>
+    <Chart ComponentName="chartDashboardItem1" Name="New Clients Per Group Description" DataSource="sqlDataSource1" DataMember="projectbudget">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Click one of the charts to filter the grid on the right to see clients who received this service</description>
+      </CustomProperties>
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="businessnameorsurname" SummaryType="CountDistinct" DefaultId="DataItem0" />
+        <Dimension DataMember="projecttype" Name="Project Type" DefaultId="DataItem1" />
+        <Dimension DataMember="businessnameorsurname" DefaultId="DataItem2" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem2" />
+      </HiddenDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="Count of New Clients">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend IsInsidePosition="true" InsidePosition="TopLeftVertical" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Profit Center" DataSource="sqlDataSource1" DataMember="projectbudget" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="profitcenterid" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="projectbudget" Color="-9407540">
+      <MeasureKey>
+        <Definition DataMember="businessnameorsurname" SummaryType="Count" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="projectbudget" Color="-13935508">
+      <MeasureKey>
+        <Definition DataMember="businessnameorsurname" SummaryType="CountDistinct" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical">
+        <LayoutGroup>
+          <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.30608502727390952" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="1.8978586346979214" />
+        </LayoutGroup>
+        <LayoutGroup>
+          <LayoutItem DashboardItem="gridDashboardItem1" Weight="1.2039436619718309" />
+          <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.79605633802816911" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

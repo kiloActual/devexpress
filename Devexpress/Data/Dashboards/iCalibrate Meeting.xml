@@ -1,0 +1,881 @@
+<Dashboard>
+  <Title Text="iCalibrate Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="profitlosssummarybycompanypcfiscalcoa" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="profitlosssummarybycompanypcfiscalcoa">
+        <Tables>
+          <Table Name="profitlosssummarybycompanypcfiscalcoa" />
+          <Table Name="company" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Table Name="profitcenter" />
+          <Table Name="coa" />
+          <Relation Type="Inner" Parent="profitlosssummarybycompanypcfiscalcoa" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybycompanypcfiscalcoa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="coaid" Nested="coaid" />
+          </Relation>
+          <Relation Type="Inner" Parent="profitlosssummarybycompanypcfiscalcoa" Nested="profitcenter">
+            <KeyColumn Parent="profitcenterid" Nested="id" />
+            <KeyColumn Parent="companyid" Nested="companyid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="profitlosssummarybycompanypcfiscalcoa" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="companyid" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="fiscalid" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="coaid" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="amount" />
+          <Column Table="company" Name="name" />
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="glcategory" Name="description" Alias="glCategory_description" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="description" Alias="profitLossSummaryByCompanyPcFiscalCoa_description" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="statementtype" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="dateto" />
+          <Column Table="profitlosssummarybycompanypcfiscalcoa" Name="profitcenterid" />
+          <Column Table="profitcenter" Name="id" />
+          <Column Table="profitcenter" Name="description" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="description" Alias="coa_description" />
+        </Columns>
+      </Query>
+      <Query Type="SelectQuery" Name="employeeturnover">
+        <Tables>
+          <Table Name="employeeturnover" />
+          <Table Name="fiscal" />
+          <Relation Type="Inner" Parent="employeeturnover" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="employeeturnover" Name="numempsactivebeforeperiod" />
+          <Column Table="employeeturnover" Name="numempsactiveinperiod" />
+          <Column Table="employeeturnover" Name="numempsterminatedinperiod" />
+          <Column Table="employeeturnover" Name="numempshiredinperiod" />
+          <Column Table="employeeturnover" Name="numempsterminatedlessthanoneyear" />
+          <Column Table="employeeturnover" Name="numempsaverage" />
+          <Column Table="fiscal" Name="id" />
+        </Columns>
+      </Query>
+      <Query Type="SelectQuery" Name="balancesheetfiscalsummarybycompany">
+        <Tables>
+          <Table Name="balancesheetfiscalsummarybycompany" />
+          <Table Name="coa" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="glcategoryglaccountlink" />
+          <Table Name="glcategory" />
+          <Relation Type="LeftOuter" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="balancesheetfiscalsummarybycompany" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="coa" Name="id" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="balancesheetfiscalsummarybycompany" Name="runningtotal" />
+          <Column Table="company" Name="name" />
+          <Column Table="glcategory" Name="sort" />
+          <Column Table="glcategory" Name="description" Alias="glCategory_description" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="fiscal" Name="id" Alias="fiscal_Id" />
+          <Column Table="fiscal" Name="dateto" />
+        </Columns>
+      </Query>
+      <Query Type="SelectQuery" Name="trailing12MonthRevenueCompanyCoa">
+        <Tables>
+          <Table Name="fiscal" />
+          <Table Name="coa" />
+          <Table Name="trailing12monthglprofitloss" />
+          <Table Name="company" />
+          <Relation Type="Inner" Parent="fiscal" Nested="trailing12monthglprofitloss">
+            <KeyColumn Parent="id" Nested="fiscalid" />
+          </Relation>
+          <Relation Type="Inner" Parent="trailing12monthglprofitloss" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="trailing12monthglprofitloss" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="id" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="jobcostcategory" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="coa" Name="description" Alias="coa_description" />
+          <Column Table="coa" Name="id" Alias="coa_Id" />
+          <Column Table="trailing12monthglprofitloss" Name="twelvemo" />
+          <Column Table="trailing12monthglprofitloss" Name="amount" />
+          <Column Table="company" Name="name" />
+          <Column Table="company" Name="id" Alias="company_Id" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Revenue" Expression="iif( [statementtype]  ='4',[amount]*-1,0)&#xA;" DataType="Decimal" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Expense" Expression="iif([statementtype]&gt;'4',[amount] ,0)&#xA;" DataType="Decimal" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Net" Expression="[Revenue]- [Expense] " DataType="Decimal" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Percent of Revenue" Expression="Iif([Total Revenue] = 0, 0 , SUM([Expense])/[Total Revenue])" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Total Revenue" Expression="Total(SUM([Revenue]))" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Amount Adjusted" Expression="Iif( [statementtype]  = 4, [amount]*-1 , [amount] )" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="sortiCalibrate" Expression="Iif(Contains([sort], 'iCalibrate'),'iCalibrate' , [sort])" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Direct Expense" Expression="Iif([jobcostcategory] In ('L','B', 'M', 'S', 'E','O'), [amount] , 0 )" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Direct Labor" Expression="Iif([jobcostcategory] = 'L',[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Average Number Employees" Expression="filter(SUM([numempsactiveinperiod]),IsThisMonth(AddMonths([dateto],12))) " DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Turnover Rate" Expression="ToDecimal(SUM([numempsterminatedinperiod]))/ToDecimal([Average Number Employees])" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="material" Expression="Iif([jobcostcategory] = 'M',[amount] , 0)" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="indirectExpense" Expression="[Expense] - [Direct Expense]" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="revenue" Expression="Iif([statementtype] = 4,[twelveMonthAdjust],0 )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="directLabor" Expression="Iif([jobcostcategory] = 'L', [twelvemo] ,0 )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="materials" Expression="Iif([jobcostcategory] = 'M',[twelvemo] ,0 )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="directExpense" Expression="Iif([jobcostcategory] In ('L', 'M', 'S', 'E'),[twelvemo],0 )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="twelveMonthAdjust" Expression="Iif([statementtype] = 4,[twelvemo]*-1 ,[twelvemo] )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="expenses" Expression="Iif([statementtype] &gt; 4, [twelvemo] ,0 )" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="indirectExpenses" Expression="[expenses] - [directExpense]" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="netProfit" Expression="[revenue] - [expenses]" DataType="Auto" DataMember="trailing12MonthRevenueCompanyCoa" />
+        <CalculatedField Name="runningTotalAdjust" Expression="Iif([statementtype] &gt; 1,[runningtotal]*-1 ,[runningtotal] )" DataType="Auto" DataMember="balancesheetfiscalsummarybycompany" />
+        <CalculatedField Name="subcontractor" Expression="Iif([jobcostcategory] = 'S',[amount] , 0)" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Gross Profit" Expression="[Revenue] - [Direct Expense]" DataType="Auto" DataMember="profitlosssummarybycompanypcfiscalcoa" />
+        <CalculatedField Name="Employees in beginning of the year" Expression="filter(SUM([numempsactiveinperiod]),IsThisMonth(AddMonths([dateto],12))) " DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Employees End Period" Expression="filter(SUM([numempsactiveinperiod]),IsLastMonth([dateto]))" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Employee Total" Expression="[Employees in beginning of the year] + [Employees End Period]" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Average Employees2" Expression="[Employee Total]/2" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="turnoverV2" Expression="iif(SUM([Average Employees2])=0,0,SUM([Total Terminated Employees])/SUM([Average Employees2]))" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="Total Terminated Employees" Expression="SUM([numempsterminatedinperiod])" DataType="Auto" DataMember="employeeturnover" />
+        <CalculatedField Name="iCalibrateSort" Expression="Iif(Contains([sort], 'iCalibrate'), 'iCalibrate', [sort])" DataType="Auto" DataMember="balancesheetfiscalsummarybycompany" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem3" Name="Amount" ParentContainer="dashboardTabPage2" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa">
+      <CustomProperties>
+        <ScaleBreaks>false</ScaleBreaks>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Amount per GL Category Description</description>
+      </CustomProperties>
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Dimension DataMember="glCategory_description" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem2" />
+        <Measure DataMember="Expense" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="glCategory_description" DefaultId="DataItem3" />
+        <Dimension DataMember="profitLossSummaryByCompanyPcFiscalCoa_description" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem3" />
+      </HiddenDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem4" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Expense">
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <SecondaryAxisY Title="Expense">
+            <NumericFormat FormatType="Currency" Precision="0" IncludeGroupSeparator="true" />
+          </SecondaryAxisY>
+          <Series>
+            <Simple Name="Expense" SeriesType="StackedBar">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Chart ComponentName="chartDashboardItem1" Name="Revenue" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Measure DataMember="Revenue" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" Title="Revenue" />
+          <Series>
+            <Simple Name="Revenue">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Percentage of Revenue" />
+        <Page ComponentName="dashboardTabPage2" Name="Amount" />
+        <Page ComponentName="dashboardTabPage3" Name="Profit and Loss Metrics">
+          <CustomProperties>
+            <descriptionEnabled>true</descriptionEnabled>
+          </CustomProperties>
+        </Page>
+        <Page ComponentName="dashboardTabPage4" Name="Trailing 12 Months" />
+        <Page ComponentName="dashboardTabPage5" Name="Employee Turnover">
+          <CustomProperties>
+            <descriptionEnabled>true</descriptionEnabled>
+            <description>Employee Turnover is calculated by dividing the number of terminated employees by the average number of employees in the period.</description>
+          </CustomProperties>
+        </Page>
+        <Page ComponentName="dashboardTabPage6" Name="Balance Sheet" />
+      </Pages>
+    </TabContainer>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Fiscal Date Range" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" IsMasterFilterCrossDataSource="true" SelectedDateTimePeriodIndex="Last 12 Months">
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last 12 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-12" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Month" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Profit Center" ParentContainer="dashboardTabPage3" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>This is only for Profit and Loss data, not Balance Sheet</description>
+      </CustomProperties>
+      <DataItems>
+        <Dimension DataMember="id" Name="Profit Center ID" DefaultId="DataItem0" />
+        <Dimension DataMember="description" Name="Profit Center Description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Company" ParentContainer="dashboardTabPage3" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" Name="Company Name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem4" Name="Percent of Revenue" ParentContainer="dashboardTabPage1" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa">
+      <CustomProperties>
+        <ScaleBreaks>false</ScaleBreaks>
+        <descriptionEnabled>true</descriptionEnabled>
+      </CustomProperties>
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Dimension DataMember="glCategory_description" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem2" />
+        <Measure DataMember="Percent of Revenue" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="glCategory_description" DefaultId="DataItem3" />
+        <Dimension DataMember="profitLossSummaryByCompanyPcFiscalCoa_description" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem4" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem3" />
+      </HiddenDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+        <Argument DefaultId="DataItem4" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <SecondaryAxisY Title="Expense">
+            <NumericFormat FormatType="Currency" Precision="0" IncludeGroupSeparator="true" />
+          </SecondaryAxisY>
+          <Series>
+            <Simple SeriesType="StackedBar">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Chart ComponentName="chartDashboardItem2" Name="Trailing 12 Months" ParentContainer="dashboardTabPage4" DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Trailing 12 Months is aggregated to the company level.</description>
+      </CustomProperties>
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+        <Measure DataMember="revenue" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="directLabor" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="materials" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="directExpense" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="indirectExpenses" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="netProfit" DefaultId="DataItem6">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="Revenue">
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2">
+          <Series>
+            <Simple Name="Direct Labor">
+              <Value DefaultId="DataItem2" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 3">
+          <Series>
+            <Simple Name="Materials">
+              <Value DefaultId="DataItem3" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 4">
+          <Series>
+            <Simple Name="Direct Expenses">
+              <Value DefaultId="DataItem4" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 5">
+          <Series>
+            <Simple Name="Indirect Expenses">
+              <Value DefaultId="DataItem5" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 6">
+          <Series>
+            <Simple Name="Net Profit">
+              <Value DefaultId="DataItem6" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Card ComponentName="cardDashboardItem1" Name="Turnover Rate" ParentContainer="dashboardTabPage5" DataSource="sqlDataSource1" DataMember="employeeturnover">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+      </CustomProperties>
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+        <Measure DataMember="Total Terminated Employees" DefaultId="DataItem2" />
+        <Measure DataMember="Average Employees2" DefaultId="DataItem4" />
+      </DataItems>
+      <Card Name="Trailing 12 Months Turnover Rate">
+        <ActualValue DefaultId="DataItem2" />
+        <TargetValue DefaultId="DataItem4" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="Title" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="Subtitle" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="false" ValueType="AbsoluteVariation" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="false" />
+        </LayoutTemplate>
+      </Card>
+      <SparklineArgument DefaultId="DataItem0" />
+    </Card>
+    <Chart ComponentName="chartDashboardItem6" Name="Employees" ParentContainer="dashboardTabPage5" DataSource="sqlDataSource1" DataMember="employeeturnover">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Dimension DataMember="dateto" Name="Date" DateTimeGroupInterval="MonthYear" DefaultId="DataItem0" />
+        <Measure DataMember="numempsactiveinperiod" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="numempshiredinperiod" DefaultId="DataItem2">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="numempsterminatedinperiod" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="numempsterminatedlessthanoneyear" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem0" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY Title="Employees" LogarithmicBase="Base5">
+            <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+          </AxisY>
+          <Series>
+            <Simple Name="Active in Month" SeriesType="StackedBar">
+              <Value DefaultId="DataItem1" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Hired in Month" SeriesType="StackedBar">
+              <Value DefaultId="DataItem2" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Terminated in Month" SeriesType="StackedBar">
+              <Value DefaultId="DataItem3" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Terminated with less than one year stay" PlotOnSecondaryAxis="true" SeriesType="Point">
+              <Value DefaultId="DataItem4" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Pivot ComponentName="pivotDashboardItem1" Name="Balance Sheet GL Categories" ParentContainer="dashboardTabPage6" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany">
+      <DataItems>
+        <Dimension DataMember="glCategory_description" SortByMeasure="DataItem3" DefaultId="DataItem0" />
+        <Dimension DataMember="description" DefaultId="DataItem2" />
+        <Measure DataMember="sort" SummaryType="Max" DefaultId="DataItem3" />
+        <Measure DataMember="runningTotalAdjust" DefaultId="DataItem4">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <HiddenMeasures>
+        <Measure DefaultId="DataItem3" />
+      </HiddenMeasures>
+      <Rows>
+        <Row DefaultId="DataItem0" />
+        <Row DefaultId="DataItem2" />
+      </Rows>
+      <Values>
+        <Value DefaultId="DataItem4" />
+      </Values>
+      <ShowRowGrandTotals>false</ShowRowGrandTotals>
+      <LayoutType>Tabular</LayoutType>
+    </Pivot>
+    <ListBox ComponentName="listBoxDashboardItem1" Name="Fiscal Period" ParentContainer="dashboardTabPage6" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" IsMasterFilterCrossDataSource="true" ShowAllValue="false" ListBoxType="Radio">
+      <DataItems>
+        <Dimension DataMember="fiscal_Id" SortOrder="Descending" DefaultId="DataItem0" />
+        <Dimension DataMember="fiscal_description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ListBox>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="iCalibrate Balance Sheet " ParentContainer="dashboardTabPage6" DataSource="sqlDataSource1" DataMember="balancesheetfiscalsummarybycompany" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="iCalibrateSort" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Card ComponentName="cardDashboardItem3" Name="Profit and Loss Metrics" ParentContainer="dashboardTabPage3" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" ContentArrangementMode="FixedRowCount" ContentLineCount="7">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Displays Revenue, Materials, Subcontractors, COGS, Gross Profit, Indirect and Net Profit as percent of sales    Scroll down if Net Profit is not visible</description>
+      </CustomProperties>
+      <InteractivityOptions IsDrillDownEnabled="true" />
+      <DataItems>
+        <Measure DataMember="Net" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Direct Expense" DefaultId="DataItem3">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem5">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem6">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Direct Labor" DefaultId="DataItem7">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem8" />
+        <Measure DataMember="material" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem10" />
+        <Measure DataMember="indirectExpense" DefaultId="DataItem11">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem12" />
+        <Measure DataMember="subcontractor" DefaultId="DataItem4">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem2" />
+        <Measure DataMember="Gross Profit" DefaultId="DataItem9">
+          <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Revenue" DefaultId="DataItem13" />
+      </DataItems>
+      <Card Name="Direct Labor">
+        <ActualValue DefaultId="DataItem7" />
+        <TargetValue DefaultId="DataItem8" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Materials">
+        <ActualValue DefaultId="DataItem0" />
+        <TargetValue DefaultId="DataItem10" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Subcontractor">
+        <ActualValue DefaultId="DataItem4" />
+        <TargetValue DefaultId="DataItem2" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Total COGS">
+        <ActualValue DefaultId="DataItem3" />
+        <TargetValue DefaultId="DataItem6" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Gross Profit">
+        <ActualValue DefaultId="DataItem9" />
+        <TargetValue DefaultId="DataItem13" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Indirect Expenses">
+        <ActualValue DefaultId="DataItem11" />
+        <TargetValue DefaultId="DataItem12" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+      <Card Name="Net Profit">
+        <ActualValue DefaultId="DataItem1" />
+        <TargetValue DefaultId="DataItem5" />
+        <CardDeltaOptions ResultIndicationMode="NoIndication" />
+        <AbsoluteVariationNumericFormat />
+        <PercentVariationNumericFormat />
+        <PercentOfTargetNumericFormat />
+        <SparklineOptions ViewType="Area" HighlightMinMaxPoints="false" />
+        <LayoutTemplate MinWidth="1" Type="Centered">
+          <MainValue Visible="true" ValueType="ActualValue" DimensionIndex="0" />
+          <SubValue Visible="false" ValueType="ActualValue" DimensionIndex="0" />
+          <BottomValue Visible="true" ValueType="PercentOfTarget" DimensionIndex="0" />
+          <BottomSubValue1 Visible="true" ValueType="CardName" DimensionIndex="0" />
+          <BottomSubValue2 Visible="false" ValueType="PercentVariation" DimensionIndex="0" />
+          <DeltaIndicator Visible="false" />
+          <Sparkline Visible="true" />
+        </LayoutTemplate>
+      </Card>
+    </Card>
+    <TextBox ComponentName="textBoxDashboardItem1" Name="Date From - Date To" ShowCaption="false" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa">
+      <DataItems>
+        <Measure DataMember="dateto" SummaryType="Max" DefaultId="DataItem0">
+          <DateTimeFormat ExactDateFormat="Month" />
+        </Measure>
+        <Measure DataMember="dateto" SummaryType="Min" DefaultId="DataItem1">
+          <DateTimeFormat ExactDateFormat="Month" />
+        </Measure>
+      </DataItems>
+      <Text>{\rtf1\deff0{\fonttbl{\f0 Calibri;}{\f1 Segoe UI;}}{\colortbl ;\red0\green0\blue255 ;\red255\green255\blue255 ;\red46\green46\blue46 ;\red54\green54\blue54 ;}{\*\defchp \f1\fs22}{\stylesheet {\ql Normal;}{\*\cs1\f1\fs22 Default Paragraph Font;}{\*\cs2\ul\f1\fs22\cf1 Hyperlink;}{\*\ts3\tsrowd\fs22\ql\tsvertalt\tscellcbpat2\tscellpct0\cltxlrtb Normal Table;}}{\*\listoverridetable}{\info}\nouicompat\splytwnine\htmautsp\expshrtn\spltpgpar\deftab720\sectd\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\headery720\footery720\pgwsxn12240\pghsxn15840\cols1\colsx720\pard\plain\ql{\f1\cf3 Date From - Date To}\f1\cf3\par\pard\plain\ql{\field\dxfldcodeview{\*\fldinst{\b\f1\cf4 docvariable DataItem1}}{\fldrslt{\b\f1\cf4 dateto (Min)}}}{\b\f1\cf4  - }{\field\dxfldcodeview{\*\fldinst{\b\f1\cf4 docvariable DataItem0}}{\fldrslt{\b\f1\cf4 dateto (Max)}}}\f1\fs22\cf0\par}</Text>
+      <Values>
+        <Value DefaultId="DataItem0" />
+        <Value DefaultId="DataItem1" />
+      </Values>
+    </TextBox>
+    <ComboBox ComponentName="comboBoxDashboardItem5" Name="iCalibrate" ParentContainer="dashboardTabPage2" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Twice a year we open the iCalibrate Peer Group to new members.   If you are interested in learning more about becoming a member of this exclusive group,   contact team@include.com</description>
+      </CustomProperties>
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="sortiCalibrate" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem6" Name="Company" ParentContainer="dashboardTabPage6" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem3" Name="iCalibrate" ParentContainer="dashboardTabPage3" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Twice a year we open the iCalibrate Peer Group to new members.   If you are interested in learning more about becoming a member of this exclusive group,   contact team@include.com</description>
+      </CustomProperties>
+      <DataItems>
+        <Dimension DataMember="sortiCalibrate" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem7" Name="iCalibrate" ParentContainer="dashboardTabPage4" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Twice a year we open the iCalibrate Peer Group to new members.   If you are interested in learning more about becoming a member of this exclusive group,   contact team@include.com</description>
+      </CustomProperties>
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="sortiCalibrate" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem8" Name="iCalibrate" ParentContainer="dashboardTabPage1" DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" IsMasterFilterCrossDataSource="true" ComboBoxType="Checked">
+      <CustomProperties>
+        <descriptionEnabled>true</descriptionEnabled>
+        <description>Twice a year we open the iCalibrate Peer Group to new members.   If you are interested in learning more about becoming a member of this exclusive group,   contact team@include.com</description>
+      </CustomProperties>
+      <InteractivityOptions IgnoreMasterFilters="false" />
+      <DataItems>
+        <Dimension DataMember="sortiCalibrate" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <ColorScheme>
+    <Entry DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" Color="-13927238">
+      <MeasureKey>
+        <Definition DataMember="Amount Adjusted" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" Color="-14531241">
+      <MeasureKey>
+        <Definition DataMember="Percent of Revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" Color="-10249056">
+      <MeasureKey>
+        <Definition DataMember="Expense" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="profitlosssummarybycompanypcfiscalcoa" Color="-13934157">
+      <MeasureKey>
+        <Definition DataMember="Revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16561741">
+      <MeasureKey>
+        <Definition DataMember="revenue" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16285447">
+      <MeasureKey>
+        <Definition DataMember="directLabor" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-15055783">
+      <MeasureKey>
+        <Definition DataMember="materials" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-15922801">
+      <MeasureKey>
+        <Definition DataMember="netProfit" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="trailing12MonthRevenueCompanyCoa" Color="-16741707">
+      <MeasureKey>
+        <Definition DataMember="indirectExpenses" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeturnover" Color="-16159857">
+      <MeasureKey>
+        <Definition DataMember="numempsactiveinperiod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeturnover" Color="-14775014">
+      <MeasureKey>
+        <Definition DataMember="numempshiredinperiod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeturnover" Color="-5760434">
+      <MeasureKey>
+        <Definition DataMember="numempsterminatedinperiod" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="sqlDataSource1" DataMember="employeeturnover" Color="-1023981">
+      <MeasureKey>
+        <Definition DataMember="numempsterminatedlessthanoneyear" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical">
+        <LayoutGroup Weight="0.17576220247888566">
+          <LayoutItem DashboardItem="textBoxDashboardItem1" Weight="0.11152268973279207" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="0.58540827439635967" />
+        </LayoutGroup>
+        <LayoutGroup Weight="1.8242377975211142">
+          <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.19903555854410363" />
+          <LayoutTabContainer DashboardItem="tabContainerDashboardItem1" Weight="1.0452998349577809">
+            <LayoutTabPage DashboardItem="dashboardTabPage3">
+              <LayoutGroup Orientation="Vertical" Weight="0.69814837953313635">
+                <LayoutGroup Weight="0.17975688894413527">
+                  <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="0.17975688894413527" />
+                  <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.32994236912239572" />
+                  <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.17975688894413527" />
+                </LayoutGroup>
+                <LayoutItem DashboardItem="cardDashboardItem3" Weight="0.69814837953313635" />
+              </LayoutGroup>
+            </LayoutTabPage>
+            <LayoutTabPage Orientation="Vertical" DashboardItem="dashboardTabPage4">
+              <LayoutItem DashboardItem="comboBoxDashboardItem7" Weight="0.17975688894413527" />
+              <LayoutItem DashboardItem="chartDashboardItem2" />
+            </LayoutTabPage>
+            <LayoutTabPage DashboardItem="dashboardTabPage1">
+              <LayoutGroup Orientation="Vertical" Weight="1.5205977918738018">
+                <LayoutItem DashboardItem="comboBoxDashboardItem8" Weight="0.17975688894413527" />
+                <LayoutItem DashboardItem="chartDashboardItem4" Weight="1.5205977918738018" />
+              </LayoutGroup>
+            </LayoutTabPage>
+            <LayoutTabPage DashboardItem="dashboardTabPage2">
+              <LayoutGroup Orientation="Vertical" Weight="1.5205977918738018">
+                <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="0.17975688894413527" />
+                <LayoutItem DashboardItem="chartDashboardItem3" Weight="1.5205977918738018" />
+              </LayoutGroup>
+            </LayoutTabPage>
+            <LayoutTabPage DashboardItem="dashboardTabPage5">
+              <LayoutGroup Orientation="Vertical">
+                <LayoutItem DashboardItem="cardDashboardItem1" Weight="0.31765399271663231" />
+                <LayoutItem DashboardItem="chartDashboardItem6" Weight="1.6823460072833676" />
+              </LayoutGroup>
+            </LayoutTabPage>
+            <LayoutTabPage DashboardItem="dashboardTabPage6">
+              <LayoutGroup Orientation="Vertical" Weight="0.26906538070946528">
+                <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="0.48571065361938831" />
+                <LayoutItem DashboardItem="comboBoxDashboardItem6" Weight="0.48571065361938831" />
+                <LayoutItem DashboardItem="listBoxDashboardItem1" Weight="0.48227854561611283" />
+              </LayoutGroup>
+              <LayoutItem DashboardItem="pivotDashboardItem1" Weight="1.2166452729099231" />
+            </LayoutTabPage>
+          </LayoutTabContainer>
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

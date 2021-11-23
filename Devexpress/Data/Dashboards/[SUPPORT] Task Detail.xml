@@ -1,0 +1,319 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="[SUPPORT] Task Detail" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="taskhist">
+        <Tables>
+          <Table Name="taskhist" />
+          <Table Name="project" />
+          <Table Name="crew" />
+          <Table Name="client" />
+          <Table Name="branch" />
+          <Table Name="company" />
+          <Table Name="schedule" />
+          <Table Name="taskcategory" />
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="crew">
+            <KeyColumn Parent="crewid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="client">
+            <KeyColumn Parent="clientid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="schedule">
+            <KeyColumn Parent="scheduleid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="taskhist" Nested="taskcategory">
+            <KeyColumn Parent="id" Nested="name" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="taskhist" Name="id" />
+          <Column Table="taskhist" Name="projectid" />
+          <Column Table="taskhist" Name="projectgroupid" />
+          <Column Table="taskhist" Name="crewid" />
+          <Column Table="taskhist" Name="description" />
+          <Column Table="taskhist" Name="hoursbudget" />
+          <Column Table="taskhist" Name="hoursactual" />
+          <Column Table="taskhist" Name="hoursbilled" />
+          <Column Table="taskhist" Name="billamount" />
+          <Column Table="taskhist" Name="valuework" />
+          <Column Table="taskhist" Name="timeandmaterialrate" />
+          <Column Table="taskhist" Name="numberincrew" />
+          <Column Table="taskhist" Name="datedone" />
+          <Column Table="taskhist" Name="datescheduled" />
+          <Column Table="taskhist" Name="complete" />
+          <Column Table="taskhist" Name="invoiceid" />
+          <Column Table="taskhist" Name="usersort" />
+          <Column Table="project" Name="name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="branchid" />
+          <Column Table="project" Name="salesemployeeid" />
+          <Column Table="project" Name="projectmanageremployeeid" />
+          <Column Table="project" Name="projecttype" />
+          <Column Table="project" Name="iscapitalequipment" />
+          <Column Table="crew" Name="name" Alias="crew_name" />
+          <Column Table="client" Name="businessnameorsurname" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="project" Name="profitcenterid" />
+          <Column Table="project" Name="stateprovince" />
+          <Column Table="schedule" Name="name" Alias="schedule_name" />
+          <Column Table="taskcategory" Name="name" Alias="taskCategory_name" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="SQL Data Source 1">
+          <View Name="taskhist">
+            <Field Name="id" Type="Int32" />
+            <Field Name="projectid" Type="Int32" />
+            <Field Name="projectgroupid" Type="Int32" />
+            <Field Name="crewid" Type="Int32" />
+            <Field Name="description" Type="String" />
+            <Field Name="hoursbudget" Type="Decimal" />
+            <Field Name="hoursactual" Type="Decimal" />
+            <Field Name="hoursbilled" Type="Decimal" />
+            <Field Name="billamount" Type="Decimal" />
+            <Field Name="valuework" Type="Decimal" />
+            <Field Name="timeandmaterialrate" Type="Decimal" />
+            <Field Name="numberincrew" Type="Int32" />
+            <Field Name="datedone" Type="DateTime" />
+            <Field Name="datescheduled" Type="DateTime" />
+            <Field Name="complete" Type="Boolean" />
+            <Field Name="invoiceid" Type="Int32" />
+            <Field Name="usersort" Type="String" />
+            <Field Name="name" Type="String" />
+            <Field Name="groupdescription" Type="String" />
+            <Field Name="clientid" Type="Int32" />
+            <Field Name="branchid" Type="Int32" />
+            <Field Name="salesemployeeid" Type="Int32" />
+            <Field Name="projectmanageremployeeid" Type="Int32" />
+            <Field Name="projecttype" Type="String" />
+            <Field Name="iscapitalequipment" Type="Boolean" />
+            <Field Name="crew_name" Type="String" />
+            <Field Name="businessnameorsurname" Type="String" />
+            <Field Name="branch_name" Type="String" />
+            <Field Name="company_name" Type="String" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="Hours Variance" Expression="[hoursbudget]-[Actual Man Hours]" DataType="Auto" DataMember="taskhist" />
+        <CalculatedField Name="Actual Man Hours" Expression="[hoursactual] *[numberincrew]" DataType="Auto" DataMember="taskhist" />
+        <CalculatedField Name="Direct/Indirect" Expression="Iif([clientid] = 0, 'Indirect', 'Direct')" DataMember="taskhist" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <ComboBox ComponentName="comboBoxDashboardItem3" Name="Task Description" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="taskhist" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="description" Name="Task Description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Grid ComponentName="gridDashboardItem1" Name="Task History" DataSource="dashboardSqlDataSource1" DataMember="taskhist">
+      <DataItems>
+        <Dimension DataMember="description" Name="Task Description" DefaultId="DataItem0" />
+        <Dimension DataMember="datedone" Name="Date Done" SortOrder="Descending" DateTimeGroupInterval="None" TopNMeasure="DataItem7" DefaultId="DataItem2" />
+        <Dimension DataMember="crew_name" DefaultId="DataItem6" />
+        <Measure DataMember="Hours Variance" Name="Hours Actual" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="name" Name="Project Name" DefaultId="DataItem8" />
+        <Measure DataMember="hoursbudget" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="Actual Man Hours" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="taskCategory_name" DefaultId="DataItem3" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem0">
+          <FormatConditionExpression Expression="[DataItem9] &lt; 0.8">
+            <IconSettings IconType="ShapeRedDiamond" />
+          </FormatConditionExpression>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Date Done" Weight="70.102154281345321">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Project Name" Weight="79.50610180689165">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Task Description" Weight="89.764953652942182">
+          <Dimension DefaultId="DataItem0" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Hours Budget" Weight="80.212089290523764">
+          <Measure DefaultId="DataItem5" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Actual" Weight="79.467505106163216">
+          <Measure DefaultId="DataItem1" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Variance" Weight="64.117824037815851">
+          <Measure DefaultId="DataItem7" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDimensionColumn Name="Crew Name" Weight="98.313996857984293">
+          <Dimension DefaultId="DataItem6" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Weight="80.21208929052375">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions ColumnWidthMode="AutoFitToContents" />
+    </Grid>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Range" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="taskhist" SelectedDateTimePeriodIndex="Last 7 Days">
+      <DataItems>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Today">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 7 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-7" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 30 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-30" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 60 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-60" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 90 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-90" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Year to Date">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Crew" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="taskhist" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="crewid" DefaultId="DataItem0" />
+        <Dimension DataMember="crew_name" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="Project Name" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="taskhist" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="name" Name="Project Name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem5" Name="Direct/Indirect" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="taskhist" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="Direct/Indirect" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="taskhist" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="hoursbudget" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="taskhist" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="hoursactual" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="taskhist" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="taskEfficiency_hoursBudget" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="taskhist" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="taskEfficiency_hoursActual" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="taskhist" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="Actual Man Hours" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup Weight="89.812646370023415">
+        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="9.1068815246795278">
+          <LayoutGroup Orientation="Vertical" Weight="10.187353629976581">
+            <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="21.382007822685789" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="63.8336060195482" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="16.427640156453716" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="52.640795562031876" />
+            <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="10.187353629976581" />
+          </LayoutGroup>
+        </LayoutGroup>
+        <LayoutItem DashboardItem="gridDashboardItem1" Weight="79.029340375678331" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

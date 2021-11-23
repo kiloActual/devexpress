@@ -1,0 +1,503 @@
+<Dashboard CurrencyCulture="en-US">
+  <Title Text="[SUPPORT] Task Detail 2" IncludeMasterFilterState="false" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="crew">
+        <Tables>
+          <Table Name="crew" />
+          <Table Name="taskhist" />
+          <Table Name="project" />
+          <Table Name="branch" />
+          <Table Name="company" />
+          <Table Name="employee" Alias="salesemployee" />
+          <Table Name="employee" Alias="projectgmanageremployee" />
+          <Table Name="employee" Alias="supervisoremployee" />
+          <Table Name="profitcenter" />
+          <Relation Type="LeftOuter" Parent="taskhist" Nested="project">
+            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectgroupid" Nested="groupid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="branch">
+            <KeyColumn Parent="branchid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="salesemployee">
+            <KeyColumn Parent="salesemployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="projectgmanageremployee">
+            <KeyColumn Parent="projectmanageremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="crew" Nested="taskhist">
+            <KeyColumn Parent="id" Nested="crewid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="supervisoremployee">
+            <KeyColumn Parent="supervisoremployeeid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="project" Nested="profitcenter">
+            <KeyColumn Parent="profitcenterid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="crew" Name="id" />
+          <Column Table="crew" Name="name" />
+          <Column Table="taskhist" Name="projectid" />
+          <Column Table="taskhist" Name="projectgroupid" />
+          <Column Table="taskhist" Name="description" />
+          <Column Table="taskhist" Name="hoursbudget" />
+          <Column Table="taskhist" Name="hoursactual" />
+          <Column Table="taskhist" Name="datedone" />
+          <Column Table="taskhist" Name="numberincrew" />
+          <Column Table="taskhist" Name="complete" />
+          <Column Table="taskhist" Name="billtype" />
+          <Column Table="project" Name="name" Alias="project_name" />
+          <Column Table="project" Name="groupdescription" />
+          <Column Table="project" Name="clientid" />
+          <Column Table="project" Name="branchid" />
+          <Column Table="project" Name="salesemployeeid" />
+          <Column Table="project" Name="projectmanageremployeeid" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+          <Column Table="company" Name="name" Alias="company_name" />
+          <Column Table="salesemployee" Name="firstname" />
+          <Column Table="salesemployee" Name="lastname" />
+          <Column Table="projectgmanageremployee" Name="firstname" Alias="projectgManagerEmployee_firstName" />
+          <Column Table="projectgmanageremployee" Name="lastname" Alias="projectgManagerEmployee_lastName" />
+          <Column Table="taskhist" Name="workorderid" />
+          <Column Table="project" Name="id" Alias="project_Id" />
+          <Column Table="taskhist" Name="hoursbudgetoriginal" />
+          <Column Table="supervisoremployee" Name="firstname" Alias="employee_firstName" />
+          <Column Table="supervisoremployee" Name="lastname" Alias="employee_lastName" />
+          <Column Table="profitcenter" Name="id" Alias="profitCenter_Id" />
+          <Column Table="profitcenter" Name="description" Alias="profitCenter_description" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="hoursActualForCrew" Expression="[hoursactual]*[numberincrew]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskEfficiency" Expression="iif([hoursActualForCrew]=0,0,[hoursBudgetAdjustForT&amp;M]/[hoursActualForCrew])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="billTypeText" Expression="iif([billtype]='T','T&amp;M',iif([billtype]='Y','Occ','None'))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="budgetStatus" Expression="iif([hoursBudgetAdjustForT&amp;M]=0,'No Budget','Ok')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursBudgetAdjustForT&amp;M" Expression="iif([billtype]='T',[hoursActualForCrew],[hoursbudget])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="internalOrClient" Expression="iif([clientid]=0,'Internal','Client')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewBudget_aggr" Expression="aggr(SUM([productionBudgetHours]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewActual_aggr" Expression="aggr(SUM([productionActualHours]), [name])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewEfficiency" Expression="Iif([crewActual_aggr] = 0, 0, [crewBudget_aggr] / [crewActual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskEfficiency_aggr" Expression="Iif([taskDescriptionActual_aggr] = 0, 0, &#xA;[taskDescriptionBudget_aggr] / [taskDescriptionActual_aggr])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskDescriptionBudget_aggr" Expression="aggr(Sum([productionBudgetHours]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="taskDescriptionActual_aggr" Expression="aggr(SUM([productionActualHours]), [description])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="crewidName" Expression="ToStr([id]) + ' - ' + [name] " DataMember="crew" />
+        <CalculatedField Name="projectManagerActual" Expression="aggr(SUM([productionActualHours]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectManagerBudget" Expression="aggr(SUM([productionBudgetHours]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="projectManagerEfficiency" Expression="Iif([projectManagerActual] = 0, 0 , &#xA;[projectManagerBudget] / [projectManagerActual])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursVariance" Expression="[hoursBudgetAdjustForT&amp;M] - [hoursActualForCrew]" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursInternal" Expression="Iif([internalOrClient] = 'Internal', [hoursActualForCrew] , 0 )" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursProduction" Expression="Iif([internalOrClient] = 'Client', [hoursActualForCrew] , 0)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="percentInternal" Expression="IIf(SUM([hoursActualForCrew]) = 0, 0, SUM([hoursInternal]) / SUM(([hoursActualForCrew])))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name=".Internal Time Target" Expression="/* Please change this number to reflect your internal time goals as an organization&#xA;The format needs to be 0.00 in order to reflect properly on the dashboard */&#xA;&#xA;MAX(0.22)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="isComplete" Expression="Iif([complete]=True, 'Complete', 'Not Complete')" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionActualHours" Expression="Iif([internalOrClient] = 'Client', [hoursActualForCrew] , 0 )" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionBudgetHours" Expression="Iif([internalOrClient]= 'Client', [hoursBudgetAdjustForT&amp;M], 0)" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionHoursVariance" Expression="Iif([productionBudgetHours]=0,0,&#xA;([productionBudgetHours] - [productionActualHours])/[productionBudgetHours])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="productionHoursVariancePercent" Expression="Iif(SUM([productionBudgetHours])=0,0 ,&#xA;SUM([productionHoursVariance])/SUM([productionBudgetHours]))" DataType="Auto" DataMember="crew" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Grid ComponentName="gridDashboardItem1" Name="Tasks" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Dimension DataMember="crewidName" DefaultId="DataItem1" />
+        <Dimension DataMember="projectid" DefaultId="DataItem2">
+          <NumericFormat FormatType="General" />
+        </Dimension>
+        <Dimension DataMember="project_name" DefaultId="DataItem3" />
+        <Measure DataMember="hoursActualForCrew" Name="crewTaskHours" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="taskEfficiency" DefaultId="DataItem8">
+          <NumericFormat FormatType="Percent" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
+        </Dimension>
+        <Dimension DataMember="description" DefaultId="DataItem9" />
+        <Measure DataMember="hoursBudgetAdjustForT&amp;M" Name="Hours Budget" DefaultId="DataItem13">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="workorderid" DefaultId="DataItem5">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Measure DataMember="hoursVariance" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem4" />
+      </DataItems>
+      <FormatRules>
+        <GridItemFormatRule Name="FormatRule 1" DataItem="DataItem2">
+          <FormatConditionValue>
+            <IconSettings IconType="IndicatorYellowExclamation" />
+            <Value1 Type="System.String" Value="No Budget" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 2" DataItem="DataItem8">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <AppearanceSettings AppearanceType="PaleRed" />
+            <Value1 Type="System.Decimal" Value="0" />
+            <Value2 Type="System.Decimal" Value="0.49" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+        <GridItemFormatRule Name="FormatRule 3" DataItem="DataItem8">
+          <FormatConditionValue Condition="BetweenOrEqual">
+            <IconSettings IconType="IndicatorYellowFlag" />
+            <Value1 Type="System.Decimal" Value="0.5" />
+            <Value2 Type="System.Decimal" Value="0.8" />
+          </FormatConditionValue>
+        </GridItemFormatRule>
+      </FormatRules>
+      <GridColumns>
+        <GridDimensionColumn Name="Date Done" Weight="85.9333860527261">
+          <Dimension DefaultId="DataItem4" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Work Order ID" Weight="80.086992604416579">
+          <Dimension DefaultId="DataItem5" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Project id" Weight="61.51609576860983">
+          <Dimension DefaultId="DataItem2" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Project Name" Weight="122.64529785314035">
+          <Dimension DefaultId="DataItem3" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Task Description" Weight="127.28802206209204">
+          <Dimension DefaultId="DataItem9" />
+        </GridDimensionColumn>
+        <GridDimensionColumn Name="Crew Name" Weight="83.18214207705104">
+          <Dimension DefaultId="DataItem1" />
+        </GridDimensionColumn>
+        <GridMeasureColumn Name="Hours Budget" Weight="147.01959995013672">
+          <Measure DefaultId="DataItem13" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Actual" Weight="39.076262092010019">
+          <Measure DefaultId="DataItem7" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridMeasureColumn Name="Hours Variance" Weight="51.069966298468543">
+          <Measure DefaultId="DataItem0" />
+          <Totals>
+            <Total Type="Sum" />
+          </Totals>
+        </GridMeasureColumn>
+        <GridDimensionColumn Name="Efficiency" Weight="61.51609576860983">
+          <Dimension DefaultId="DataItem8" />
+        </GridDimensionColumn>
+      </GridColumns>
+      <GridOptions />
+    </Grid>
+    <Chart ComponentName="chartDashboardItem1" Name="Efficiency by Project Manager" ParentContainer="dashboardTabPage2" DataSource="dashboardSqlDataSource1" DataMember="crew" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="projectManagerEfficiency" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="projectgManagerEmployee_lastName" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" Title="Efficiency by Crew" Logarithmic="true" />
+          <Series>
+            <Simple Name="Efficiency">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions OverlappingMode="Reposition" Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2" />
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX EnableZooming="true" VisiblePointsCount="20" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem4" Name="Complete" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="isComplete" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <Chart ComponentName="chartDashboardItem2" Name="Efficiency by Task" DataSource="dashboardSqlDataSource1" DataMember="crew" FilterString="[DataItem2] = 'Client'" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem1" />
+        <Measure DataMember="taskEfficiency_aggr" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="internalOrClient" DefaultId="DataItem2" />
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem2" />
+      </HiddenDimensions>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" Title="Efficiency by Task" />
+          <Series>
+            <Simple Name="Efficiency by Task">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX EnableZooming="true" />
+    </Chart>
+    <ComboBox ComponentName="comboBoxDashboardItem2" Name="Project ID, Name" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="project_Id" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Precision="0" Unit="Ones" />
+        </Dimension>
+        <Dimension DataMember="project_name" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" SelectedDateTimePeriodIndex="Last 7 Days">
+      <DataItems>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="DayMonthYear" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Yesterday">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 7 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-7" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 14 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-14" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 30 Days">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="-30" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Day" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem3" Name="Profit Center" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="profitCenter_Id" Name="Profit Center" DefaultId="DataItem0" />
+        <Dimension DataMember="profitCenter_description" Name="Profit Center Description" DefaultId="DataItem1" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+        <Dimension DefaultId="DataItem1" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem5" Name="Crew" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="crewidName" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem6" Name="Branch" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="branch_name" Name="Branch" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem7" Name="Company" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="company_name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem8" Name="Internal Or Client" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" IsMasterFilterCrossDataSource="true" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="internalOrClient" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <ComboBox ComponentName="comboBoxDashboardItem9" Name="Task Description" ParentContainer="groupDashboardItem1" DataSource="dashboardSqlDataSource1" DataMember="crew" EnableSearch="true" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="description" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+    <TextBox ComponentName="textBoxDashboardItem1" Name="Summary" ShowCaption="false" DataSource="dashboardSqlDataSource1" DataMember="crew">
+      <DataItems>
+        <Measure DataMember="hoursInternal" DefaultId="DataItem0">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="hoursProduction" DefaultId="DataItem1">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="productionHoursVariancePercent" DefaultId="DataItem2">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Dimension DataMember="datedone" DateTimeGroupInterval="None" DefaultId="DataItem4" />
+        <Measure DataMember="hoursActualForCrew" DefaultId="DataItem3">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="percentInternal" DefaultId="DataItem5">
+          <NumericFormat FormatType="Percent" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="isComplete" SummaryType="Count" DefaultId="DataItem6" />
+        <Measure DataMember="productionBudgetHours" DefaultId="DataItem7">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+        <Measure DataMember="hoursBudgetAdjustForT&amp;M" DefaultId="DataItem8">
+          <NumericFormat FormatType="Number" Unit="Ones" IncludeGroupSeparator="true" />
+        </Measure>
+      </DataItems>
+      <HiddenDimensions>
+        <Dimension DefaultId="DataItem4" />
+      </HiddenDimensions>
+      <Text>{\rtf1\deff0{\fonttbl{\f0 Calibri;}{\f1 Segoe UI;}{\f2 Calibri Light;}{\f3 Arial;}{\f4 Century Gothic;}{\f5 Franklin Gothic Book;}}{\colortbl ;\red0\green0\blue255 ;\red255\green255\blue255 ;\red247\green247\blue247 ;\red150\green150\blue150 ;\red33\green179\blue0 ;\red255\green0\blue0 ;}{\*\defchp \f1\fs22}{\stylesheet {\ql Normal;}{\s1\sbasedon0\ql Quote;}{\s2\sbasedon0\ql heading 2;}{\*\cs3\f1\fs22 Default Paragraph Font;}{\*\cs4\f1\fs22\cf1 Hyperlink;}{\*\cs5\sbasedon3\slink1\i\f2\fs22 Quote Char;}{\*\cs6\sbasedon3\slink2\f2\fs26 Heading 2 Char;}{\*\ts7\tsrowd\fs22\ql\tsvertalt\tscellcbpat2\tscellpct0\cltxlrtb Normal Table;}{\*\ts8\tsrowd\f3\fs22\ql\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\tsvertalt\tscellcbpat2\tscellpct0\tsbrdrt\brdrnil\tsbrdrl\brdrnil\tsbrdrb\brdrnil\tsbrdrr\brdrnil\cltxlrtb Grid Table Light;}{\*\ts9\tsrowd\f3\fs22\ql\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\tsvertalt\tscellcbpat2\tscellpct0\tsbrdrt\brdrnil\tsbrdrl\brdrnil\tsbrdrb\brdrnil\tsbrdrr\brdrnil\cltxlrtb Grid Table 1 Light;}{\*\ts10\tsrowd\f3\fs22\ql\tscbandsh1\tscbandsv1\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\tsvertalt\tscellcbpat2\tscellpct0\tsbrdrt\brdrnil\tsbrdrl\brdrnil\tsbrdrb\brdrnil\tsbrdrr\brdrnil\cltxlrtb Plain Table 1;}}{\*\listoverridetable}{\info}\nouicompat\splytwnine\htmautsp\expshrtn\spltpgpar\deftab720\sectd\marglsxn1440\margrsxn1440\margtsxn1440\margbsxn1440\headery720\footery720\pgwsxn12240\pghsxn15840\cols1\colsx720\trowd\irow0\irowband-1\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh760\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmgf\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrs\brdrw15\brdrcf3\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\pard\plain\s2\ql\intbl{\b\ul\f4\fs28\cf0\cs3 T}{\b\ul\f4\fs28\cf0\cs3 ask }{\b\ul\f4\fs28\cf0\cs3 S}{\b\ul\f4\fs28\cf0\cs3 ummary}\f5\cf0\cell\pard\plain\s2\ql\intbl{\f5\cf0\cs3        }\f5\cf0\cell\pard\plain\s2\qc\intbl{\b\f4\fs28\cf0\cs3 Hours }\b\f4\fs28\cf0\cell\pard\plain\s2\qc\intbl{\b\f4\fs28\cf0\cs3   Budget  }\b\f4\fs28\cf0\cell\pard\plain\s2\qc\intbl{\b\f4\fs28\cf0\cs3   Actual  }\f5\cf0\cell\trowd\irow0\irowband-1\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh760\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmgf\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrs\brdrw15\brdrcf3\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\row\trowd\irow1\irowband0\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh140\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmrg\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\pard\plain\s2\ql\intbl{\field\dxfldcodeview{\*\fldinst{\b\f4\fs22\cf0\cs3 docvariable DataItem2}}{\fldrslt{\b\f4\fs22\cf0\cs3 productionHoursVariancePercent (Sum)}}}{\b\f4\fs22\cf0\cs3  }{\f4\fs22\cf5\cs3 (-under)}{\f4\fs22\cf0\cs3 /}{\f4\fs22\cf6\cs3 over}{\f4\fs22\cf0\cs3  production hours}\b\f4\fs28\cf0\cell\pard\plain\s2\ql\intbl\f5\cf0\cell\pard\plain\s2\ql\intbl{\f4\fs22\cf0\cs3 Production   }\f4\fs22\cf0\cell\pard\plain\s2\qr\intbl{\field\dxfldcodeview{\*\fldinst{\f4\fs22\cf0\cs3 docvariable DataItem7}}{\fldrslt{\f4\fs22\cf0\cs3 productionBudgetHours (Sum)}}}\b\f4\fs28\cf0\cell\pard\plain\s2\qr\intbl\sl360\slmult1{\field\dxfldcodeview{\*\fldinst{\f4\fs22\cf0\cs3 docvariable DataItem1}}{\fldrslt{\f4\fs22\cf0\cs3 hoursProduction (Sum)}}}\b\f4\fs28\cf0\cell\trowd\irow1\irowband0\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh140\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmrg\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\row\trowd\irow2\irowband1\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh465\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmrg\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\pard\plain\s2\ql\intbl\b\f4\fs28\cf0\cell\pard\plain\s2\ql\intbl\f5\cf0\cell\pard\plain\s2\ql\intbl{\f4\fs22\cf0\cs3 Indirect    }\f4\fs22\cf0\cell\pard\plain\s2\qr\intbl\b\f4\fs28\cf0\cell\pard\plain\s2\qr\intbl\sl360\slmult1{\field\dxfldcodeview{\*\fldinst{\f4\fs22\cf0\cs3 docvariable DataItem0}}{\fldrslt{\f4\fs22\cf0\cs3 hoursInternal (Sum)}}}\b\f4\fs28\cf0\cell\trowd\irow2\irowband1\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trrh465\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvmrg\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\row\trowd\irow3\irowband2\lastrow\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrs\brdrw15\brdrcf3\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\pard\plain\s2\ql\intbl{\f4\fs22\cf0\cs3 Indirect time is }{\field\dxfldcodeview{\*\fldinst{\b\f4\fs22\cf0\cs3 docvariable DataItem5}}{\fldrslt{\b\f4\fs22\cf0\cs3 percentInternal (Sum)}}}{\b\f4\fs22\cf0\cs3  }{\f4\fs22\cf0\cs3 of total hours}\b\f4\fs28\cf0\cell\pard\plain\s2\ql\intbl{\f5\cf0\cs3       }\f5\cf0\cell\pard\plain\s2\ql\intbl{\f4\fs22\cf0\cs3 Total    }\f5\fs22\cf0\cell\pard\plain\s2\qr\intbl\sl360\slmult1{\field\dxfldcodeview{\*\fldinst{\f4\fs22\cf0\cs3 docvariable DataItem8}}{\fldrslt{\f4\fs22\cf0\cs3 hoursBudgetAdjustForT&amp;M (Sum)}}}\b\f4\fs22\cf0\cell\pard\plain\s2\qr\intbl\sl360\slmult1{\field\dxfldcodeview{\*\fldinst{\f4\fs22\cf0\cs3 docvariable DataItem3}}{\fldrslt{\f4\fs22\cf0\cs3 hoursActualForCrew (Sum)}}}\b\f4\fs22\cf0\cell\trowd\irow3\irowband2\lastrow\ts10\trbrdrt\brdrs\brdrw10\trbrdrl\brdrs\brdrw10\trbrdrb\brdrs\brdrw10\trbrdrr\brdrs\brdrw10\trbrdrh\brdrs\brdrw10\trbrdrv\brdrs\brdrw10\trleft0\trftsWidth3\trwWidth8625\tbllkhdrcols\tbllkhdrrows\tbllknocolband\tbllknorowband\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrnone\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf3\cltxlrtb\clftsWidth3\clwWidth3242\cellx10\clvertalt\clbrdrt\brdrnone\clbrdrl\brdrs\brdrw15\brdrcf3\clbrdrb\brdrnone\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth28\cellx20\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1105\cellx30\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth2371\cellx40\clvertalt\clbrdrt\brdrs\brdrw15\brdrcf4\clbrdrl\brdrs\brdrw15\brdrcf4\clbrdrb\brdrs\brdrw15\brdrcf4\clbrdrr\brdrs\brdrw15\brdrcf4\cltxlrtb\clftsWidth3\clwWidth1879\cellx50\row\pard\plain\s2\ql\b\f5\fs22\cf0\par}</Text>
+      <Values>
+        <Value DefaultId="DataItem0" />
+        <Value DefaultId="DataItem1" />
+        <Value DefaultId="DataItem2" />
+        <Value DefaultId="DataItem3" />
+        <Value DefaultId="DataItem5" />
+        <Value DefaultId="DataItem6" />
+        <Value DefaultId="DataItem7" />
+        <Value DefaultId="DataItem8" />
+      </Values>
+    </TextBox>
+    <Chart ComponentName="chartDashboardItem3" Name="Efficiency by Crew" ParentContainer="dashboardTabPage1" DataSource="dashboardSqlDataSource1" DataMember="crew" Rotated="true">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <InteractivityOptions MasterFilterMode="Multiple" />
+      <DataItems>
+        <Measure DataMember="crewEfficiency" DefaultId="DataItem0">
+          <NumericFormat FormatType="Percent" />
+        </Measure>
+        <Dimension DataMember="name" SortOrder="Descending" SortByMeasure="DataItem0" DefaultId="DataItem1" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false" Title="Efficiency by Crew" Logarithmic="true" />
+          <Series>
+            <Simple Name="Efficiency">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions OverlappingMode="Reposition" Position="Inside" ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+        <Pane Name="Pane 2" />
+      </Panes>
+      <ChartLegend Visible="false" />
+      <AxisX EnableZooming="true" VisiblePointsCount="20" />
+    </Chart>
+    <TabContainer ComponentName="tabContainerDashboardItem1" Name="Tab Container 1">
+      <Pages>
+        <Page ComponentName="dashboardTabPage1" Name="Page 1" />
+        <Page ComponentName="dashboardTabPage2" Name="Page 2" />
+      </Pages>
+    </TabContainer>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem1" Name="Group 1" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="crewEfficiency" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="taskEfficiency_aggr" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-13319197">
+      <MeasureKey>
+        <Definition DataMember="budgetStatus" SummaryType="Count" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="crew" Color="-10782805">
+      <MeasureKey>
+        <Definition DataMember="projectManagerEfficiency" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup Weight="60.790695083321332">
+        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="15.349733625117846">
+          <LayoutGroup Orientation="Vertical" Weight="18.794775741004123">
+            <LayoutItem DashboardItem="comboBoxDashboardItem7" Weight="54.380607819093932" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem6" Weight="33.56014550960866" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="18.794775741004123" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="31.710996187057159" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="20.643925063555624" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem9" Weight="38.939849323446296" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem8" Weight="12.828156789634498" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="12.828156789634498" />
+            <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="64.613986119675431" />
+          </LayoutGroup>
+        </LayoutGroup>
+        <LayoutGroup Orientation="Vertical" Weight="94.7941587170223">
+          <LayoutGroup Weight="66.484015262712788">
+            <LayoutGroup Orientation="Vertical" Weight="56.666231949855344">
+              <LayoutItem DashboardItem="textBoxDashboardItem1" Weight="24.810298235862579" />
+              <LayoutItem DashboardItem="chartDashboardItem2" Weight="47.337330004213747" />
+            </LayoutGroup>
+            <LayoutTabContainer DashboardItem="tabContainerDashboardItem1" Weight="51.7484848696547">
+              <LayoutTabPage DashboardItem="dashboardTabPage1">
+                <LayoutItem DashboardItem="chartDashboardItem3" Weight="51.7484848696547" />
+              </LayoutTabPage>
+              <LayoutTabPage DashboardItem="dashboardTabPage2">
+                <LayoutItem DashboardItem="chartDashboardItem1" Weight="51.7484848696547" />
+              </LayoutTabPage>
+            </LayoutTabContainer>
+          </LayoutGroup>
+          <LayoutItem DashboardItem="gridDashboardItem1" Weight="41.134917682370116" />
+        </LayoutGroup>
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

@@ -1,0 +1,243 @@
+﻿<Dashboard CurrencyCulture="en-US">
+  <Title Text="Accounts Receivable Days update" IncludeMasterFilterState="false" />
+  <DataSources>
+    <SqlDataSource Name="SQL Data Source 1" ComponentName="dashboardSqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="receivablesAndRevenueByCompanyAndFiscal">
+        <Tables>
+          <Table Name="receivablesandrevenuebycompanyandfiscal" />
+          <Table Name="fiscal" />
+          <Table Name="company" />
+          <Table Name="branch" />
+          <Relation Type="Inner" Parent="receivablesandrevenuebycompanyandfiscal" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="Inner" Parent="receivablesandrevenuebycompanyandfiscal" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="company" Nested="branch">
+            <KeyColumn Parent="id" Nested="companyid" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="receivablesandrevenuebycompanyandfiscal" Name="companyid" />
+          <Column Table="receivablesandrevenuebycompanyandfiscal" Name="fiscalid" />
+          <Column Table="receivablesandrevenuebycompanyandfiscal" Name="receivables" />
+          <Column Table="receivablesandrevenuebycompanyandfiscal" Name="sales" />
+          <Column Table="fiscal" Name="description" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="company" Name="name" />
+          <Column Table="branch" Name="name" Alias="branch_name" />
+        </Columns>
+      </Query>
+      <ResultSchema>
+        <DataSet Name="SQL Data Source 1">
+          <View Name="receivablesandrevenuebycompanyandfiscal">
+            <Field Name="companyid" Type="Int32" />
+            <Field Name="fiscalid" Type="Int32" />
+            <Field Name="receivables" Type="Double" />
+            <Field Name="sales" Type="Double" />
+            <Field Name="description" Type="String" />
+            <Field Name="dateto" Type="DateTime" />
+            <Field Name="name" Type="String" />
+          </View>
+        </DataSet>
+      </ResultSchema>
+      <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
+      <CalculatedFields>
+        <CalculatedField Name="receivablesDays" Expression="Iif([sales] = 0, 0, [receivables] / [sales] * 365)" DataType="Auto" DataMember="receivablesAndRevenueByCompanyAndFiscal" />
+        <CalculatedField Name="receivableDaysLastYear" Expression="filter(Avg([receivablesDays]), IsThisYear(AddYears([dateto],1)))" DataType="Auto" DataMember="receivablesAndRevenueByCompanyAndFiscal" />
+        <CalculatedField Name="receivableDaysYTD" Expression="filter(AVG([receivablesDays]), IsYearToDate([dateto]))" DataType="Auto" DataMember="receivablesAndRevenueByCompanyAndFiscal" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Chart ComponentName="chartDashboardItem1" Name="Receivables Days" DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="Month" DefaultId="DataItem1" />
+        <Measure DataMember="receivableDaysYTD" SummaryType="Average" DefaultId="DataItem0" />
+        <Measure DataMember="receivableDaysLastYear" DefaultId="DataItem2" />
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem1" />
+      </Arguments>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple Name="Receivables Days" SeriesType="Line">
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Receivable Days Last Year" SeriesType="Line">
+              <Value DefaultId="DataItem2" />
+              <CustomProperties>
+                <DashStyleProperty>dash</DashStyleProperty>
+              </CustomProperties>
+              <PointLabelOptions ContentType="Value" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <Chart ComponentName="chartDashboardItem2" Name="Receivables vs. Sales" DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal">
+      <ColoringOptions MeasuresColoringMode="Hue" />
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="MonthYear" ColoringMode="None" DefaultId="DataItem2" />
+        <Measure DataMember="receivables" Name="Receivables" SummaryType="Average" DefaultId="DataItem0">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+        <Measure DataMember="sales" SummaryType="Average" DefaultId="DataItem1">
+          <NumericFormat FormatType="Currency" />
+        </Measure>
+      </DataItems>
+      <Arguments>
+        <Argument DefaultId="DataItem2" />
+      </Arguments>
+      <ColorScheme>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-10515563">
+          <MeasureKey>
+            <Definition DataMember="receivables" SummaryType="Average" />
+          </MeasureKey>
+        </Entry>
+        <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-16740376">
+          <MeasureKey>
+            <Definition DataMember="receivables" />
+          </MeasureKey>
+        </Entry>
+      </ColorScheme>
+      <Panes>
+        <Pane Name="Pane 1">
+          <AxisY TitleVisible="false">
+            <NumericFormat FormatType="Currency" />
+          </AxisY>
+          <SecondaryAxisY>
+            <NumericFormat FormatType="Currency" />
+          </SecondaryAxisY>
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem0" />
+              <PointLabelOptions OverlappingMode="Reposition" Position="Inside" ContentType="Value" />
+            </Simple>
+            <Simple Name="Sales" PlotOnSecondaryAxis="true" ShowPointMarkers="true" SeriesType="Spline">
+              <Value DefaultId="DataItem1" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+    <DateFilter ComponentName="dateFilterDashboardItem1" Name="Date Filter" ParentContainer="groupDashboardItem2" DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" ArrangementMode="Vertical" SelectedDateTimePeriodIndex="Last 24 Months">
+      <DataItems>
+        <Dimension DataMember="dateto" DateTimeGroupInterval="None" DefaultId="DataItem0" />
+      </DataItems>
+      <Dimension DefaultId="DataItem0" />
+      <DateTimePeriods>
+        <DateTimePeriod Name="Last Quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Quarter">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Interval="Quarter" Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="This Year">
+          <StartLimit>
+            <FlowDateTimePeriodLimit />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 12 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Interval="Month" Offset="-12" />
+          </StartLimit>
+        </DateTimePeriod>
+        <DateTimePeriod Name="Last 24 Months">
+          <StartLimit>
+            <FlowDateTimePeriodLimit Offset="-1" />
+          </StartLimit>
+          <EndLimit>
+            <FlowDateTimePeriodLimit Offset="1" />
+          </EndLimit>
+        </DateTimePeriod>
+      </DateTimePeriods>
+    </DateFilter>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Branch" ParentContainer="groupDashboardItem2" DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" ComboBoxType="Checked">
+      <DataItems>
+        <Dimension DataMember="branch_name" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <Groups>
+    <Group ComponentName="groupDashboardItem2" Name="Group 2" ShowCaption="false">
+      <InteractivityOptions IsMasterFilter="true" />
+    </Group>
+  </Groups>
+  <ColorScheme>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="receivablesDays" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="receivables" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="receivables" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-6764743">
+      <MeasureKey>
+        <Definition DataMember="sales" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-13202228">
+      <MeasureKey>
+        <Definition DataMember="receivablesDays" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-5001297">
+      <MeasureKey>
+        <Definition DataMember="receivableDaysLastYear" />
+      </MeasureKey>
+    </Entry>
+    <Entry DataSource="dashboardSqlDataSource1" DataMember="receivablesAndRevenueByCompanyAndFiscal" Color="-11105076">
+      <MeasureKey>
+        <Definition DataMember="receivableDaysYTD" SummaryType="Average" />
+      </MeasureKey>
+    </Entry>
+  </ColorScheme>
+  <LayoutTree>
+    <LayoutGroup Orientation="Vertical" Weight="100">
+      <LayoutGroup DashboardItem="groupDashboardItem2" Weight="8.1036659293853184">
+        <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="44.208377720651917" />
+        <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="85.14190317195326" />
+      </LayoutGroup>
+      <LayoutItem DashboardItem="chartDashboardItem1" Weight="37.048901117137618" />
+      <LayoutItem DashboardItem="chartDashboardItem2" Weight="44.208377720651917" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>
