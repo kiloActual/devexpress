@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard CurrencyCulture="en-US">
   <Title Text="Crew Efficiency" IncludeMasterFilterState="false" />
   <DataSources>
@@ -75,7 +76,7 @@
         <CalculatedField Name="taskefficiency_aggr" Expression="Iif([taskdescriptionactual_aggr] = 0, 0, &#xA;[taskdescriptionbudget_aggr] / [taskdescriptionactual_aggr])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="taskdescriptionbudget_aggr" Expression="aggr(Sum([hoursbudgetadjustfort&amp;m]), [description])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="taskdescriptionactual_aggr" Expression="aggr(SUM([hoursactualforcrew]), [description])" DataType="Auto" DataMember="crew" />
-        <CalculatedField Name="crewidname" Expression="ToStr([id]) + ' - ' + [name] " DataMember="crew" />
+        <CalculatedField Name="crewidname" Expression="Concat(ToStr([id]) , ' - ' , [name] )" DataMember="crew" />
         <CalculatedField Name="projectmanageractual" Expression="aggr(SUM([hoursactualforcrew]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="projectmanagerbudget" Expression="aggr(SUM([hoursbudgetadjustfort&amp;m]), [projectmanageremployeeid])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="projectmanagerefficiency" Expression="Iif([projectmanageractual] = 0, 0 , &#xA;[projectmanagerbudget] / [projectmanageractual])" DataType="Auto" DataMember="crew" />
@@ -132,7 +133,7 @@
         </GridItemFormatRule>
       </FormatRules>
       <GridColumns>
-        <GridDimensionColumn Name="Work Order ID" Weight="80.086992604416579">
+        <GridDimensionColumn Name="Work Order ID" Weight="80.08699260441658">
           <Dimension DefaultId="DataItem5" />
         </GridDimensionColumn>
         <GridDimensionColumn Name="Project Id" Weight="61.51609576860983">
@@ -153,13 +154,13 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Actual" Weight="39.076262092010019">
+        <GridMeasureColumn Name="Hours Actual" Weight="39.07626209201002">
           <Measure DefaultId="DataItem7" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Variance" Weight="51.069966298468543">
+        <GridMeasureColumn Name="Hours Variance" Weight="51.06996629846854">
           <Measure DefaultId="DataItem0" />
         </GridMeasureColumn>
         <GridDimensionColumn Name="Efficiency" Weight="61.51609576860983">
@@ -356,20 +357,20 @@
   </ColorScheme>
   <LayoutTree>
     <LayoutGroup Orientation="Vertical" Weight="100">
-      <LayoutGroup Orientation="Vertical" Weight="60.790695083321332">
-        <LayoutGroup Orientation="Vertical" Weight="29.535700436846572">
+      <LayoutGroup Orientation="Vertical" Weight="60.79069508332133">
+        <LayoutGroup Orientation="Vertical" Weight="29.53570043684657">
           <LayoutGroup DashboardItem="groupDashboardItem1" Weight="49.3531972588188">
-            <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="23.694611514808479" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="23.69461151480848" />
             <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="32.494865307704615" />
             <LayoutItem DashboardItem="comboBoxDashboardItem5" Weight="18.71474391738332" />
-            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="40.304611097639892" />
-            <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="25.034376341203419" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="40.30461109763989" />
+            <LayoutItem DashboardItem="comboBoxDashboardItem4" Weight="25.03437634120342" />
             <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="51.043004793912914" />
           </LayoutGroup>
-          <LayoutGroup Weight="52.820602241417269">
+          <LayoutGroup Weight="52.82060224141727">
             <LayoutItem DashboardItem="chartDashboardItem2" Weight="52.422484456059266" />
             <LayoutItem DashboardItem="chartDashboardItem4" Weight="46.34788770665503" />
-            <LayoutItem DashboardItem="chartDashboardItem1" Weight="55.992232363450782" />
+            <LayoutItem DashboardItem="chartDashboardItem1" Weight="55.99223236345078" />
           </LayoutGroup>
         </LayoutGroup>
         <LayoutItem DashboardItem="gridDashboardItem1" Weight="31.800742113024818" />

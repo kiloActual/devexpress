@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard CurrencyCulture="en-US">
   <Title Visible="false" Text="Sales Manager Dashboard" IncludeMasterFilterState="false" />
   <DataSources>
@@ -39,7 +40,7 @@
       <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
       <CalculatedFields>
         <CalculatedField Name="goalAmountToSell" Expression="([quantity]*[closingpercent])*[averageeach]*0.01" DataType="Decimal" DataMember="salesgoalsummary" />
-        <CalculatedField Name="salespersonFirstLast" Expression="[firstname] + ' ' + [lastname]" DataMember="salesgoalsummary" />
+        <CalculatedField Name="salespersonFirstLast" Expression="Concat([firstname] , ' ' , [lastname])" DataMember="salesgoalsummary" />
       </CalculatedFields>
     </SqlDataSource>
   </DataSources>
@@ -227,7 +228,7 @@
         <Measure DataMember="amountsoldinfiscal" DefaultId="DataItem0">
           <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
-        <Measure DataMember="goalAmountToSell" DefaultId="DataItem1">
+        <Measure DataMember="goalAmountToSell" SummaryType="Count" DefaultId="DataItem1">
           <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
         <Dimension DataMember="salespersonFirstLast" DefaultId="DataItem2" />
@@ -394,23 +395,23 @@
   <LayoutTree>
     <LayoutGroup Orientation="Vertical" Weight="100">
       <LayoutGroup DashboardItem="groupDashboardItem1" Weight="14.422895333271946">
-        <LayoutGroup Weight="36.865021770682148">
+        <LayoutGroup Weight="36.86502177068215">
           <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="15.166004448212451" />
-          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="39.373014383528258" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="39.37301438352826" />
         </LayoutGroup>
       </LayoutGroup>
       <LayoutItem DashboardItem="cardDashboardItem1" Weight="33.5834816525919" />
-      <LayoutGroup Weight="83.848542019119748">
+      <LayoutGroup Weight="83.84854201911975">
         <LayoutGroup Orientation="Vertical" Weight="62.338039423025755">
           <LayoutItem DashboardItem="chartDashboardItem3" Weight="37.42035443005549" />
           <LayoutGroup Weight="49.86420409681503">
             <LayoutItem DashboardItem="chartDashboardItem1" Weight="49.86420409681503" />
-            <LayoutItem DashboardItem="chartDashboardItem5" Weight="53.268426922344233" />
+            <LayoutItem DashboardItem="chartDashboardItem5" Weight="53.26842692234423" />
           </LayoutGroup>
         </LayoutGroup>
-        <LayoutGroup Orientation="Vertical" Weight="63.933422888997043">
-          <LayoutItem DashboardItem="gridDashboardItem2" Weight="39.777384560684453" />
-          <LayoutItem DashboardItem="chartDashboardItem2" Weight="53.268426922344233" />
+        <LayoutGroup Orientation="Vertical" Weight="63.93342288899704">
+          <LayoutItem DashboardItem="gridDashboardItem2" Weight="39.77738456068445" />
+          <LayoutItem DashboardItem="chartDashboardItem2" Weight="53.26842692234423" />
         </LayoutGroup>
       </LayoutGroup>
     </LayoutGroup>

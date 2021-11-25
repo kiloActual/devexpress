@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard>
+  <Title Text="apurv Dashboard " />
+  <DataSources>
+    <SqlDataSource Name="gl" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="gl">
+        <Tables>
+          <Table Name="gl" />
+        </Tables>
+        <Columns>
+          <Column Table="gl" Name="id" />
+          <Column Table="gl" Name="companyid" />
+          <Column Table="gl" Name="profitcenterid" />
+          <Column Table="gl" Name="coaid" />
+          <Column Table="gl" Name="amount" />
+          <Column Table="gl" Name="transdescription" />
+          <Column Table="gl" Name="transdate" />
+          <Column Table="gl" Name="transby" />
+          <Column Table="gl" Name="transno" />
+          <Column Table="gl" Name="projectid" />
+          <Column Table="gl" Name="projectgroupid" />
+          <Column Table="gl" Name="reference" />
+          <Column Table="gl" Name="fiscalid" />
+          <Column Table="gl" Name="externalentityid" />
+          <Column Table="gl" Name="externalentitytype" />
+          <Column Table="gl" Name="datedone" />
+          <Column Table="gl" Name="quantityhours" />
+          <Column Table="gl" Name="originaltrans" />
+          <Column Table="gl" Name="transtype" />
+          <Column Table="gl" Name="invoiceno" />
+          <Column Table="gl" Name="workorderid" />
+          <Column Table="gl" Name="proposalid" />
+          <Column Table="gl" Name="taskid" />
+          <Column Table="gl" Name="branchid" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" />
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <Pie ComponentName="pieDashboardItem1" Name="Pies 1" DataSource="sqlDataSource1" DataMember="gl">
+      <DataItems>
+        <Measure DataMember="amount" DefaultId="DataItem0" />
+        <Measure DataMember="branchid" DefaultId="DataItem1" />
+        <Measure DataMember="coaid" DefaultId="DataItem2" />
+      </DataItems>
+      <Values>
+        <Value DefaultId="DataItem0" />
+        <Value DefaultId="DataItem1" />
+        <Value DefaultId="DataItem2" />
+      </Values>
+    </Pie>
+    <Chart ComponentName="chartDashboardItem1" Name="Chart 1" DataSource="sqlDataSource1" DataMember="gl">
+      <DataItems>
+        <Measure DataMember="amount" SummaryType="Count" DefaultId="DataItem0" />
+        <Measure DataMember="taskid" DefaultId="DataItem1" />
+        <Measure DataMember="branchid" DefaultId="DataItem2" />
+        <Measure DataMember="coaid" DefaultId="DataItem3" />
+      </DataItems>
+      <Panes>
+        <Pane Name="Pane 1">
+          <Series>
+            <Simple>
+              <Value DefaultId="DataItem0" />
+            </Simple>
+            <Simple>
+              <Value DefaultId="DataItem1" />
+            </Simple>
+            <Simple>
+              <Value DefaultId="DataItem2" />
+            </Simple>
+            <Simple>
+              <Value DefaultId="DataItem3" />
+            </Simple>
+          </Series>
+        </Pane>
+      </Panes>
+    </Chart>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutGroup Orientation="Vertical">
+        <LayoutItem DashboardItem="pieDashboardItem1" />
+        <LayoutItem DashboardItem="chartDashboardItem1" />
+      </LayoutGroup>
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

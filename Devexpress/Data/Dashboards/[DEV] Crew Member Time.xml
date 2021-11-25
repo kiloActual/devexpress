@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard>
   <Title Text="[DEV] Crew Member Time" />
   <DataSources>
@@ -40,7 +41,7 @@
       </Query>
       <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
       <CalculatedFields>
-        <CalculatedField Name="crewEmployeeLastFirst" Expression="[lastname] + ', ' + [firstname]" DataType="Auto" DataMember="taskhist" />
+        <CalculatedField Name="crewEmployeeLastFirst" Expression="Concat([lastname] , ', ' , [firstname])" DataType="Auto" DataMember="taskhist" />
       </CalculatedFields>
     </SqlDataSource>
   </DataSources>
@@ -158,7 +159,7 @@
       <LayoutGroup Orientation="Vertical">
         <LayoutItem DashboardItem="dateFilterDashboardItem1" />
         <LayoutGroup>
-          <LayoutItem DashboardItem="gridDashboardItem2" Weight="0.80562703565248039" />
+          <LayoutItem DashboardItem="gridDashboardItem2" Weight="0.8056270356524804" />
           <LayoutItem DashboardItem="pivotDashboardItem1" Weight="1.1943729643475196" />
         </LayoutGroup>
       </LayoutGroup>

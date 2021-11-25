@@ -1,9 +1,9 @@
 ﻿<Dashboard>
   <Title Text="Accounts Receivable Aging" />
   <DataSources>
-    <SqlDataSource Name="arinvoice" ComponentName="sqlDataSource1">
+    <SqlDataSource Name="arInvoice" ComponentName="sqlDataSource1">
       <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
-      <Query Type="SelectQuery" Name="arinvoice">
+      <Query Type="SelectQuery" Name="arInvoice">
         <Tables>
           <Table Name="employee" />
           <Table Name="company" />
@@ -11,60 +11,60 @@
           <Table Name="projectidwithname" />
           <Table Name="openarinvoice" />
           <Relation Type="LeftOuter" Parent="openarinvoice" Nested="company">
-            <KeyColumn Parent="companyid" Nested="id" />
+            <KeyColumn Parent="companyid" Nested="Id" />
           </Relation>
           <Relation Type="LeftOuter" Parent="openarinvoice" Nested="client">
-            <KeyColumn Parent="clientid" Nested="id" />
+            <KeyColumn Parent="clientid" Nested="Id" />
           </Relation>
           <Relation Type="LeftOuter" Parent="openarinvoice" Nested="employee">
-            <KeyColumn Parent="salesid" Nested="id" />
+            <KeyColumn Parent="salesid" Nested="Id" />
           </Relation>
           <Relation Type="LeftOuter" Parent="openarinvoice" Nested="projectidwithname">
-            <KeyColumn Parent="projectid" Nested="id" />
+            <KeyColumn Parent="projectid" Nested="Id" />
           </Relation>
         </Tables>
         <Columns>
-          <Column Table="employee" Name="lastname" />
+          <Column Table="employee" Name="lastName" />
           <Column Table="company" Name="name" Alias="company_name" />
           <Column Table="client" Name="businessnameorsurname" />
           <Column Table="employee" Name="firstname" />
           <Column Table="projectidwithname" Name="name" />
           <Column Table="openarinvoice" Name="id" />
-          <Column Table="openarinvoice" Name="invoicetype" />
+          <Column Table="openarinvoice" Name="invoiceType" />
           <Column Table="openarinvoice" Name="companyid" />
           <Column Table="openarinvoice" Name="clientid" />
           <Column Table="openarinvoice" Name="projectid" />
-          <Column Table="openarinvoice" Name="invoicedate" />
-          <Column Table="openarinvoice" Name="invoicefiscal" />
-          <Column Table="openarinvoice" Name="invoicepaidinfulldate" />
-          <Column Table="openarinvoice" Name="invoicepaidinfullfiscal" />
-          <Column Table="openarinvoice" Name="amountnotax" />
-          <Column Table="openarinvoice" Name="amounttaxable" />
-          <Column Table="openarinvoice" Name="amounttax" />
-          <Column Table="openarinvoice" Name="amountincludingtax" />
-          <Column Table="openarinvoice" Name="amountreceived" />
-          <Column Table="openarinvoice" Name="invoicecategory" />
+          <Column Table="openarinvoice" Name="invoiceDate" />
+          <Column Table="openarinvoice" Name="invoiceFiscal" />
+          <Column Table="openarinvoice" Name="invoicePaidInFullDate" />
+          <Column Table="openarinvoice" Name="invoicePaidInFullFiscal" />
+          <Column Table="openarinvoice" Name="amountNoTax" />
+          <Column Table="openarinvoice" Name="amountTaxable" />
+          <Column Table="openarinvoice" Name="amountTax" />
+          <Column Table="openarinvoice" Name="amountIncludingTax" />
+          <Column Table="openarinvoice" Name="amountReceived" />
+          <Column Table="openarinvoice" Name="invoiceCategory" />
           <Column Table="openarinvoice" Name="salesid" />
-          <Column Table="projectidwithname" Name="id" />
+          <Column Table="projectidwithname" Name="Id" />
         </Columns>
       </Query>
       <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
       <CalculatedFields>
-        <CalculatedField Name="age" Expression="Today() - [invoicedate]" DataType="Integer" DataMember="arinvoice" />
-        <CalculatedField Name="agingdays" Expression="Iif([age] &lt; 31, '0-30',&#xA;Iif([age] &gt; 30 &amp;&amp; [age] &lt; 61, '30-60',&#xA;Iif([age] &gt; 60 &amp;&amp; [age] &lt; 91, '60-90',&#xA;Iif([age] &gt; 90 &amp;&amp; [age] &lt; 121, '90-120',&#xA;'120+'))))" DataMember="arinvoice" />
-        <CalculatedField Name="agingdayssort" Expression="Iif([agingdays] = '0-30', '1',&#xA;Iif([agingdays] = '30-60', '2',&#xA;Iif([agingdays] = '60-90', '3',&#xA;Iif([agingdays] = '90-120', '4',&#xA; '5'))))&#xA;" DataType="Auto" DataMember="arinvoice" />
-        <CalculatedField Name="salesnamelastfirst" Expression="Iif(IsNullOrEmpty([lastname]),'.Not Assigned', [lastname] + ', ' + [firstname])" DataType="Auto" DataMember="arinvoice" />
-        <CalculatedField Name="amountowing" Expression="[amountincludingtax] - [amountreceived]" DataType="Auto" DataMember="arinvoice" />
-        <CalculatedField Name="projectidname" Expression="ToStr([projectid]) + ' - ' + [name]" DataType="Auto" DataMember="arinvoice" />
+        <CalculatedField Name="age" Expression="Today() - [invoiceDate]" DataType="Integer" DataMember="arInvoice" />
+        <CalculatedField Name="agingDays" Expression="Iif([age] &lt; 31, '0-30',&#xA;Iif([age] &gt; 30 &amp;&amp; [age] &lt; 61, '30-60',&#xA;Iif([age] &gt; 60 &amp;&amp; [age] &lt; 91, '60-90',&#xA;Iif([age] &gt; 90 &amp;&amp; [age] &lt; 121, '90-120',&#xA;'120+'))))" DataMember="arInvoice" />
+        <CalculatedField Name="agingDaysSort" Expression="Iif([agingDays] = '0-30', '1',&#xA;Iif([agingDays] = '30-60', '2',&#xA;Iif([agingDays] = '60-90', '3',&#xA;Iif([agingDays] = '90-120', '4',&#xA; '5'))))&#xA;" DataType="Auto" DataMember="arInvoice" />
+        <CalculatedField Name="salesNameLastFirst" Expression="Iif(IsNullOrEmpty([lastName]),'.Not Assigned', [lastName] + ', ' + [firstname])" DataType="Auto" DataMember="arInvoice" />
+        <CalculatedField Name="amountOwing" Expression="[amountIncludingTax] - [amountReceived]" DataType="Auto" DataMember="arInvoice" />
+        <CalculatedField Name="projectIDName" Expression="ToStr([projectid]) + ' - ' + [name]" DataType="Auto" DataMember="arInvoice" />
       </CalculatedFields>
     </SqlDataSource>
   </DataSources>
   <Items>
-    <Chart ComponentName="chartDashboardItem1" Name="Amount Outstanding by Sales Person" DataSource="sqlDataSource1" DataMember="arinvoice">
+    <Chart ComponentName="chartDashboardItem1" Name="Amount Outstanding by Sales Person" DataSource="sqlDataSource1" DataMember="arInvoice">
       <InteractivityOptions MasterFilterMode="Multiple" />
       <DataItems>
-        <Dimension DataMember="salesnamelastfirst" Name="Sales Person Name" DefaultId="DataItem0" />
-        <Measure DataMember="amountowing" DefaultId="DataItem1">
+        <Dimension DataMember="salesNameLastFirst" Name="Sales Person Name" DefaultId="DataItem0" />
+        <Measure DataMember="amountOwing" DefaultId="DataItem1">
           <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
         <Measure DataMember="age" SummaryType="Average" DefaultId="DataItem2" />
@@ -88,15 +88,15 @@
         </Pane>
       </Panes>
     </Chart>
-    <Pivot ComponentName="pivotDashboardItem1" Name="AR Aging " DataSource="sqlDataSource1" DataMember="arinvoice">
+    <Pivot ComponentName="pivotDashboardItem1" Name="AR Aging " DataSource="sqlDataSource1" DataMember="arInvoice">
       <DataItems>
-        <Dimension DataMember="agingdays" Name="Aging Days" SortByMeasure="DataItem4" DefaultId="DataItem1" />
-        <Measure DataMember="amountowing" Name="Amount Owing" DefaultId="DataItem2">
+        <Dimension DataMember="agingDays" Name="Aging Days" SortByMeasure="DataItem4" DefaultId="DataItem1" />
+        <Measure DataMember="amountOwing" Name="Amount Owing" DefaultId="DataItem2">
           <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
         <Dimension DataMember="businessnameorsurname" DefaultId="DataItem3" />
-        <Dimension DataMember="projectidname" DefaultId="DataItem5" />
-        <Measure DataMember="agingdayssort" Name="Aging Days Sort" SummaryType="Max" DefaultId="DataItem4" />
+        <Dimension DataMember="projectIDName" DefaultId="DataItem5" />
+        <Measure DataMember="agingDaysSort" Name="Aging Days Sort" SummaryType="Max" DefaultId="DataItem4" />
       </DataItems>
       <HiddenMeasures>
         <Measure DefaultId="DataItem4" />
@@ -115,12 +115,12 @@
       <ShowColumnTotals>false</ShowColumnTotals>
       <LayoutType>Tabular</LayoutType>
     </Pivot>
-    <Chart ComponentName="chartDashboardItem2" Name="Top Clients Owing" DataSource="sqlDataSource1" DataMember="arinvoice" Rotated="true">
+    <Chart ComponentName="chartDashboardItem2" Name="Top Clients Owing" DataSource="sqlDataSource1" DataMember="arInvoice" Rotated="true">
       <ColoringOptions MeasuresColoringMode="Hue" />
       <InteractivityOptions MasterFilterMode="Multiple" />
       <DataItems>
         <Dimension DataMember="businessnameorsurname" SortOrder="Descending" TopNEnabled="true" TopNCount="10" TopNMeasure="DataItem1" DefaultId="DataItem0" />
-        <Measure DataMember="amountowing" DefaultId="DataItem1">
+        <Measure DataMember="amountOwing" DefaultId="DataItem1">
           <NumericFormat FormatType="Currency" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
       </DataItems>
@@ -141,14 +141,14 @@
       <ChartLegend Visible="false" />
       <AxisX Reverse="true" />
     </Chart>
-    <Card ComponentName="cardDashboardItem1" Name="Summary of Invoices Outstanding" DataSource="sqlDataSource1" DataMember="arinvoice">
+    <Card ComponentName="cardDashboardItem1" Name="Summary of Invoices Outstanding" DataSource="sqlDataSource1" DataMember="arInvoice">
       <InteractivityOptions MasterFilterMode="Multiple" />
       <DataItems>
-        <Measure DataMember="amountowing" DefaultId="DataItem0">
+        <Measure DataMember="amountOwing" DefaultId="DataItem0">
           <NumericFormat FormatType="Currency" Precision="0" Unit="Ones" IncludeGroupSeparator="true" />
         </Measure>
-        <Dimension DataMember="agingdays" SortByMeasure="DataItem2" DefaultId="DataItem1" />
-        <Measure DataMember="agingdayssort" SummaryType="Max" DefaultId="DataItem2" />
+        <Dimension DataMember="agingDays" SortByMeasure="DataItem2" DefaultId="DataItem1" />
+        <Measure DataMember="agingDaysSort" SummaryType="Max" DefaultId="DataItem2" />
       </DataItems>
       <HiddenMeasures>
         <Measure DefaultId="DataItem2" />
@@ -174,12 +174,12 @@
     </Card>
   </Items>
   <ColorScheme>
-    <Entry DataSource="sqlDataSource1" DataMember="arinvoice" Color="-13202228">
+    <Entry DataSource="sqlDataSource1" DataMember="arInvoice" Color="-13202228">
       <MeasureKey>
-        <Definition DataMember="amountowing" />
+        <Definition DataMember="amountOwing" />
       </MeasureKey>
     </Entry>
-    <Entry DataSource="sqlDataSource1" DataMember="arinvoice" Color="-219580">
+    <Entry DataSource="sqlDataSource1" DataMember="arInvoice" Color="-219580">
       <MeasureKey>
         <Definition DataMember="age" SummaryType="Average" />
       </MeasureKey>

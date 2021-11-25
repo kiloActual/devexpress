@@ -10,9 +10,9 @@
           <Table Name="project" />
           <Table Name="branch" />
           <Table Name="company" />
-          <Table Name="employee" Alias="salesEmployee" />
+          <Table Name="employee" Alias="salesemployee" />
           <Table Name="employee" Alias="projectgmanageremployee" />
-          <Table Name="employee" Alias="supervisorEmployee" />
+          <Table Name="employee" Alias="supervisoremployee" />
           <Table Name="profitcenter" />
           <Relation Type="LeftOuter" Parent="taskhist" Nested="project">
             <KeyColumn Parent="projectid" Nested="id" />
@@ -24,7 +24,7 @@
           <Relation Type="LeftOuter" Parent="project" Nested="company">
             <KeyColumn Parent="companyid" Nested="id" />
           </Relation>
-          <Relation Type="LeftOuter" Parent="project" Nested="salesEmployee">
+          <Relation Type="LeftOuter" Parent="project" Nested="salesemployee">
             <KeyColumn Parent="salesemployeeid" Nested="id" />
           </Relation>
           <Relation Type="LeftOuter" Parent="project" Nested="projectgmanageremployee">
@@ -33,7 +33,7 @@
           <Relation Type="LeftOuter" Parent="crew" Nested="taskhist">
             <KeyColumn Parent="id" Nested="crewid" />
           </Relation>
-          <Relation Type="LeftOuter" Parent="project" Nested="supervisorEmployee">
+          <Relation Type="LeftOuter" Parent="project" Nested="supervisoremployee">
             <KeyColumn Parent="supervisoremployeeid" Nested="id" />
           </Relation>
           <Relation Type="LeftOuter" Parent="project" Nested="profitcenter">
@@ -51,7 +51,7 @@
           <Column Table="taskhist" Name="datedone" Alias="date" />
           <Column Table="taskhist" Name="numberincrew" />
           <Column Table="taskhist" Name="complete" />
-          <Column Table="taskhist" Name="billType" />
+          <Column Table="taskhist" Name="billtype" />
           <Column Table="project" Name="name" Alias="project_name" />
           <Column Table="project" Name="groupdescription" />
           <Column Table="project" Name="clientid" />
@@ -60,15 +60,15 @@
           <Column Table="project" Name="projectmanageremployeeid" />
           <Column Table="branch" Name="name" Alias="branch_name" />
           <Column Table="company" Name="name" Alias="company_name" />
-          <Column Table="salesEmployee" Name="firstName" />
-          <Column Table="salesEmployee" Name="lastName" />
-          <Column Table="projectgmanageremployee" Name="firstName" Alias="projectgManagerEmployee_firstName" />
-          <Column Table="projectgmanageremployee" Name="lastName" Alias="projectgManagerEmployee_lastName" />
-          <Column Table="taskhist" Name="workOrderId" />
+          <Column Table="salesemployee" Name="firstname" />
+          <Column Table="salesemployee" Name="lastname" />
+          <Column Table="projectgmanageremployee" Name="firstname" Alias="projectgManagerEmployee_firstName" />
+          <Column Table="projectgmanageremployee" Name="lastname" Alias="projectgManagerEmployee_lastName" />
+          <Column Table="taskhist" Name="workorderid" />
           <Column Table="project" Name="id" Alias="project_Id" />
-          <Column Table="taskhist" Name="hoursBudgetOriginal" />
-          <Column Table="supervisorEmployee" Name="firstName" Alias="employee_firstName" />
-          <Column Table="supervisorEmployee" Name="lastName" Alias="employee_lastName" />
+          <Column Table="taskhist" Name="hoursbudgetoriginal" />
+          <Column Table="supervisoremployee" Name="firstname" Alias="employee_firstName" />
+          <Column Table="supervisoremployee" Name="lastname" Alias="employee_lastName" />
           <Column Table="profitcenter" Name="id" Alias="profitCenter_Id" />
           <Column Table="profitcenter" Name="description" Alias="profitCenter_description" />
         </Columns>
@@ -123,9 +123,9 @@
       <CalculatedFields>
         <CalculatedField Name="hoursActualForCrew" Expression="[hoursactual]*[numberincrew]" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="taskEfficiency" Expression="iif([hoursActualForCrew]=0,0,[hoursBudgetAdjustForT&amp;M]/[hoursActualForCrew])" DataType="Auto" DataMember="crew" />
-        <CalculatedField Name="billTypeText" Expression="iif([billType]='T','T&amp;M',iif([billType]='Y','Occ','None'))" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="billTypeText" Expression="iif([billtype]='T','T&amp;M',iif([billtype]='Y','Occ','None'))" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="budgetStatus" Expression="iif([hoursBudgetAdjustForT&amp;M]=0,'No Budget','Ok')" DataType="Auto" DataMember="crew" />
-        <CalculatedField Name="hoursBudgetAdjustForT&amp;M" Expression="iif([billType]='T',[hoursActualForCrew],[hoursbudget])" DataType="Auto" DataMember="crew" />
+        <CalculatedField Name="hoursBudgetAdjustForT&amp;M" Expression="iif([billtype]='T',[hoursActualForCrew],[hoursbudget])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="internalOrClient" Expression="iif([clientid]=0,'Internal','Client')" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="crewBudget_aggr" Expression="aggr(SUM([productionBudgetHours]), [name])" DataType="Auto" DataMember="crew" />
         <CalculatedField Name="crewActual_aggr" Expression="aggr(SUM([productionActualHours]), [name])" DataType="Auto" DataMember="crew" />

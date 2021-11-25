@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard CurrencyCulture="en-US">
   <Title Text="Client Lifetime Value with Job Info" IncludeMasterFilterState="false" />
   <DataSources>
@@ -61,7 +62,7 @@
         <CalculatedField Name="account status" Expression="Iif([accountcloseddate] Is Null, 'Active', 'Closed')" DataType="Auto" DataMember="client" />
         <CalculatedField Name="average value per year" Expression="Iif([tenure] &lt;&gt; 0, [lifetimevalue] / [tenure], 0)" DataType="Auto" DataMember="client" />
         <CalculatedField Name="revenue by job" Expression="[amount] * -1" DataType="Decimal" DataMember="client" />
-        <CalculatedField Name="project group name" Expression="ToStr([projectid]) + '-' + [name] + ' - ' + [groupdescription]" DataType="Auto" DataMember="client" />
+        <CalculatedField Name="project group name" Expression="Concat(ToStr([projectid]),'-',[name],' - ',[groupdescription])" DataType="Auto" DataMember="client" />
         <CalculatedField Name="averagelifetimevalue_usethis" Expression="Avg([lifetimevalue])" DataType="Decimal" DataMember="client" />
         <CalculatedField Name="roundedlifetimevalue" Expression="Round([lifetimevalue], -3 ) " DataType="Auto" DataMember="client" />
       </CalculatedFields>

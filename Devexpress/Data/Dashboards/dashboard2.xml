@@ -1,0 +1,66 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard>
+  <Title Text="test1 Dashboard" />
+  <DataSources>
+    <SqlDataSource Name="GL" ComponentName="sqlDataSource1">
+      <Connection Name="PostgreSQLConnectionString" FromAppConfig="true" />
+      <Query Type="SelectQuery" Name="GL">
+        <Tables>
+          <Table Name="balancesheetfiscalsummarybycompany" />
+          <Table Name="coa" />
+          <Table Name="company" />
+          <Table Name="fiscal" />
+          <Table Name="glcategory" />
+          <Table Name="glcategoryglaccountlink" />
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="company">
+            <KeyColumn Parent="companyid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="coa">
+            <KeyColumn Parent="coaid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="balancesheetfiscalsummarybycompany" Nested="fiscal">
+            <KeyColumn Parent="fiscalid" Nested="id" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="coa" Nested="glcategoryglaccountlink">
+            <KeyColumn Parent="id" Nested="coaid" />
+          </Relation>
+          <Relation Type="LeftOuter" Parent="glcategoryglaccountlink" Nested="glcategory">
+            <KeyColumn Parent="categoryid" Nested="id" />
+          </Relation>
+        </Tables>
+        <Columns>
+          <Column Table="balancesheetfiscalsummarybycompany" Name="runningtotal" />
+          <Column Table="coa" Name="description" />
+          <Column Table="coa" Name="accounttype" />
+          <Column Table="coa" Name="statementtype" />
+          <Column Table="coa" Name="id" />
+          <Column Table="company" Name="name" />
+          <Column Table="fiscal" Name="dateto" />
+          <Column Table="fiscal" Name="description" Alias="fiscal_description" />
+          <Column Table="glcategory" Name="description" Alias="glcategory_description" />
+          <Column Table="glcategoryglaccountlink" Name="categoryid" />
+        </Columns>
+      </Query>
+      <ConnectionOptions CloseConnection="true" />
+      <CalculatedFields>
+        <CalculatedField Name="Calculated Field 1" Expression="Iif([statementtype] = 2, [runningtotal] * -1, [runningtotal])" DataType="Auto" DataMember="GL" />
+        <CalculatedField Name="Calculated Field 2" Expression="ToStr([description])  + ToStr([id])" DataMember="GL" />
+      </CalculatedFields>
+    </SqlDataSource>
+  </DataSources>
+  <Items>
+    <ComboBox ComponentName="comboBoxDashboardItem1" Name="Combo Box 1" DataSource="sqlDataSource1" DataMember="GL">
+      <DataItems>
+        <Dimension DataMember="Calculated Field 2" DefaultId="DataItem0" />
+      </DataItems>
+      <FilterDimensions>
+        <Dimension DefaultId="DataItem0" />
+      </FilterDimensions>
+    </ComboBox>
+  </Items>
+  <LayoutTree>
+    <LayoutGroup>
+      <LayoutItem DashboardItem="comboBoxDashboardItem1" />
+    </LayoutGroup>
+  </LayoutTree>
+</Dashboard>

@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard>
   <Title Text="Accounts Receivable Aging" />
   <DataSources>
@@ -187,6 +188,8 @@
         </Simple>
       </Series>
     </RangeFilter>
+    <Pivot ComponentName="pivotDashboardItem2" Name="Pivot 1" DataSource="sqlDataSource1" DataMember="arInvoice" />
+    <Pivot ComponentName="pivotDashboardItem3" Name="Pivot 2" DataSource="sqlDataSource1" DataMember="arInvoice" />
   </Items>
   <ColorScheme>
     <Entry DataSource="sqlDataSource1" DataMember="arInvoice" Color="-13202228">
@@ -203,12 +206,18 @@
   <LayoutTree>
     <LayoutGroup>
       <LayoutGroup>
-        <LayoutItem DashboardItem="pivotDashboardItem1" Weight="0.77571549185258259" />
+        <LayoutGroup Orientation="Vertical" Weight="0.7757154918525826">
+          <LayoutItem DashboardItem="pivotDashboardItem1" Weight="0.7757154918525826" />
+          <LayoutItem DashboardItem="pivotDashboardItem2" Weight="0.7757154918525826" />
+        </LayoutGroup>
         <LayoutGroup Orientation="Vertical" Weight="0.834193191629376">
-          <LayoutItem DashboardItem="cardDashboardItem1" Weight="0.35583881661747668" />
-          <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.46627574357381668" />
-          <LayoutItem DashboardItem="chartDashboardItem2" Weight="1.1018778085548613" />
-          <LayoutItem DashboardItem="rangeFilterDashboardItem1" Weight="0.39871053144572222" />
+          <LayoutItem DashboardItem="cardDashboardItem1" Weight="0.3558388166174767" />
+          <LayoutItem DashboardItem="chartDashboardItem1" Weight="0.4662757435738167" />
+          <LayoutGroup Weight="1.1018778085548613">
+            <LayoutItem DashboardItem="chartDashboardItem2" Weight="1.1018778085548613" />
+            <LayoutItem DashboardItem="pivotDashboardItem3" Weight="1.1018778085548613" />
+          </LayoutGroup>
+          <LayoutItem DashboardItem="rangeFilterDashboardItem1" Weight="0.3987105314457222" />
         </LayoutGroup>
       </LayoutGroup>
     </LayoutGroup>

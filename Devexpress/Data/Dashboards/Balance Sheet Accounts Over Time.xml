@@ -1,4 +1,5 @@
-﻿<Dashboard>
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Dashboard>
   <Title Text="GL Accounts over time" />
   <DataSources>
     <SqlDataSource Name="GL" ComponentName="sqlDataSource1">
@@ -43,7 +44,7 @@
       <ConnectionOptions CloseConnection="true" DbCommandTimeout="3000" />
       <CalculatedFields>
         <CalculatedField Name="Adjusted Running Total" Expression="Iif([statementtype] = 2, [runningtotal] * -1, [runningtotal])" DataType="Auto" DataMember="GL" />
-        <CalculatedField Name="glidname" Expression="ToStr([id]) + ' - ' + ToStr([description])" DataType="Auto" DataMember="GL" />
+        <CalculatedField Name="glidname" Expression="Concat(ToStr([id]),' - ',ToStr([description]))" DataType="Auto" DataMember="GL" />
       </CalculatedFields>
     </SqlDataSource>
   </DataSources>
@@ -174,12 +175,12 @@
   <LayoutTree>
     <LayoutGroup>
       <LayoutGroup Orientation="Vertical" Weight="1.8521143906977908">
-        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="0.14788560930220918">
-          <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.840720025753416" />
-          <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.85415741385772781" />
+        <LayoutGroup DashboardItem="groupDashboardItem1" Weight="1.0149757732639448">
+          <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="1.0569846962250689" />
+          <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.6378927433860749" />
           <LayoutItem DashboardItem="dateFilterDashboardItem1" Weight="2.6585754321229054" />
         </LayoutGroup>
-        <LayoutItem DashboardItem="chartDashboardItem1" Weight="2.3443364795290496" />
+        <LayoutItem DashboardItem="chartDashboardItem1" Weight="1.4772463155673137" />
         <LayoutItem DashboardItem="gridDashboardItem1" Weight="1.0950782438362912" />
       </LayoutGroup>
     </LayoutGroup>

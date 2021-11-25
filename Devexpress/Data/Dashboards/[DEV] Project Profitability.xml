@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard>
   <Title Text="Project Profitability" />
   <DataSources>
@@ -101,19 +102,19 @@
         <CalculatedField Name="directExpenses" Expression="Iif([jobcostcategory] In('M', 'L', 'B', 'E', 'S') ,[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfit" Expression="[revenue] - [totalExpense]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="internalOrClient" Expression="Iif([clientid] = 0, 'Internal' , 'Client' )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="groupIdDescription" Expression="ToStr([groupid]) + ' - ' + [groupdescription]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="groupIdDescription" Expression="Concat(ToStr([groupid]) , ' - ' , [groupdescription])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfitVariance" Expression="[grossProfit] - [budgetGrossProfit]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="hoursVariance" Expression="[totalHours] - [currentbudgethours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="profitCenterIdDescription" Expression="ToStr([profitCenter_Id]) + ' - ' + [profitCenter_description]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="profitCenterIdDescription" Expression="Concat(ToStr([profitCenter_Id]) , ' - ' , [profitCenter_description])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfitMargin" Expression="Iif(SUM([revenue]) = 0,0 , SUM([grossProfit])/SUM([revenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetRevenue" Expression="Iif([statementtype]=4,[currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetExpenses" Expression="Iif([jobcostcategory] In ('M', 'L', 'B', 'S', 'E'), [currentbudgetamount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetGrossProfit" Expression="[budgetRevenue] - [budgetExpenses]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetGrossProfitMargin" Expression="Iif(SUM([budgetRevenue])=0,0 , SUM([budgetGrossProfit])/SUM([budgetRevenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="projectIdName" Expression="ToStr([id]) + ' - ' + [name]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="estimatorLastFirst" Expression="[estimatorEmployee_lastName] + ', ' + [estimatorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="projectManagerLastFirst" Expression="[projectManagerEmployee_lastName] + ', ' + [projectManagerEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="salesPersonLastFirst" Expression="[lastname] + ', ' + [firstname]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectIdName" Expression="Concat(ToStr([id]) , ' - ' , [name])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="estimatorLastFirst" Expression="Concat([estimatorEmployee_lastName] , ', ' , [estimatorEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectManagerLastFirst" Expression="Concat([projectManagerEmployee_lastName] , ', ' , [projectManagerEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="salesPersonLastFirst" Expression="Concat([lastname] , ', ' , [firstname])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="isInternal" Expression="Iif([clientid]=0, 'Internal', 'Client')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="totalHours" Expression="[hours] + [unPostedHours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="groupClosedOpen" Expression="Iif([groupisclosed]=True,'Closed' , 'Open')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
@@ -122,7 +123,7 @@
         <CalculatedField Name="unPostedHours" Expression="[unpostedhourlyhours] + [unpostedsalaryhours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="totalExpense" Expression="[directExpenses] + [unPostedAmount]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="efficiency" Expression="Iif(SUM([totalHours]) = 0,0, SUM([currentbudgethours]) / SUM([totalHours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="supervisorLastFirst" Expression=" [supervisorEmployee_lastName] + ', ' +[supervisorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="supervisorLastFirst" Expression="Concat( [supervisorEmployee_lastName] , ', ' ,[supervisorEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="Indirect Expense" Expression="Iif([statementtype] &gt;5 &amp;&amp; [statementtype] &lt;9,[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetRevenuePerHour" Expression="Iif(SUM([currentbudgethours]) = 0 ,0 ,SUM([budgetRevenue])/SUM([currentbudgethours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="actualRevenuePerHour" Expression="Iif(SUM([totalHours]) = 0 ,0 ,SUM([revenue])/SUM([totalHours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
@@ -269,7 +270,7 @@
             <Total />
           </Totals>
         </GridDimensionColumn>
-        <GridMeasureColumn Name="Bud GP" Weight="68.791486126631085">
+        <GridMeasureColumn Name="Bud GP" Weight="68.79148612663109">
           <Measure DefaultId="DataItem1" />
           <Totals>
             <Total Type="Sum" />
@@ -278,7 +279,7 @@
         <GridMeasureColumn Name="Bud GP Margin" Weight="39.47693237948716">
           <Measure DefaultId="DataItem26" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Act GP" Weight="53.157057461487661">
+        <GridMeasureColumn Name="Act GP" Weight="53.15705746148766">
           <Measure DefaultId="DataItem2" />
           <Totals>
             <Total Type="Sum" />
@@ -287,25 +288,25 @@
         <GridMeasureColumn Name="Act GP Margin" Weight="32.8323001968012">
           <Measure DefaultId="DataItem3" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="GP Var" Weight="50.811893161716149">
+        <GridMeasureColumn Name="GP Var" Weight="50.81189316171615">
           <Measure DefaultId="DataItem7" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Hours" Weight="164.55236170063461">
+        <GridMeasureColumn Name="Bud Hours" Weight="164.5523617006346">
           <Measure DefaultId="DataItem9" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Act Hours" Weight="75.045257592688458">
+        <GridMeasureColumn Name="Act Hours" Weight="75.04525759268846">
           <Measure DefaultId="DataItem6" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Variance" Weight="75.045257592688458">
+        <GridMeasureColumn Name="Hours Variance" Weight="75.04525759268846">
           <Measure DefaultId="DataItem4" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Var %" Weight="74.654396876059877">
+        <GridMeasureColumn Name="Hours Var %" Weight="74.65439687605988">
           <Measure DefaultId="DataItem5" />
         </GridMeasureColumn>
       </GridColumns>
@@ -404,7 +405,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Mat" Weight="54.764180545624171">
+        <GridMeasureColumn Name="Bud Mat" Weight="54.76418054562417">
           <Measure DefaultId="DataItem4" />
           <Totals>
             <Total Type="Sum" />
@@ -415,7 +416,7 @@
           <TargetValue DefaultId="DataItem18" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Mat" Weight="71.193434709311418">
+        <GridMeasureColumn Name="Act Mat" Weight="71.19343470931142">
           <Measure DefaultId="DataItem13" />
           <Totals>
             <Total Type="Sum" />
@@ -609,13 +610,13 @@
             <Total />
           </Totals>
         </GridDimensionColumn>
-        <GridMeasureColumn Name="Bud Rev" Weight="74.909248110383885">
+        <GridMeasureColumn Name="Bud Rev" Weight="74.90924811038388">
           <Measure DefaultId="DataItem21" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Rev" Weight="58.449060088411919">
+        <GridMeasureColumn Name="Rev" Weight="58.44906008841192">
           <Measure DefaultId="DataItem15" />
           <Totals>
             <Total Type="Sum" />
@@ -627,29 +628,29 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Bud Mat %" Weight="74.903576117282881">
+        <GridDeltaColumn Name="Bud Mat %" Weight="74.90357611728288">
           <ActualValue DefaultId="DataItem17" />
           <TargetValue DefaultId="DataItem18" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Mat" Weight="71.026705930222079">
+        <GridMeasureColumn Name="Act Mat" Weight="71.02670593022208">
           <Measure DefaultId="DataItem13" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Act Mat %" Weight="74.897549624613063">
+        <GridDeltaColumn Name="Act Mat %" Weight="74.89754962461306">
           <ActualValue DefaultId="DataItem19" />
           <TargetValue DefaultId="DataItem20" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Bud Labor" Weight="74.891146476151377">
+        <GridMeasureColumn Name="Bud Labor" Weight="74.89114647615138">
           <Measure DefaultId="DataItem16" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Bud Labor %" Weight="74.884343130910835">
+        <GridDeltaColumn Name="Bud Labor %" Weight="74.88434313091084">
           <ActualValue DefaultId="DataItem22" />
           <TargetValue DefaultId="DataItem23" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
@@ -671,7 +672,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Bud Sub %" Weight="74.891243898090835">
+        <GridDeltaColumn Name="Bud Sub %" Weight="74.89124389809083">
           <ActualValue DefaultId="DataItem25" />
           <TargetValue DefaultId="DataItem27" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
@@ -682,40 +683,40 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Act Sub %" Weight="74.881992076921463">
+        <GridDeltaColumn Name="Act Sub %" Weight="74.88199207692146">
           <ActualValue DefaultId="DataItem10" />
           <TargetValue DefaultId="DataItem24" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Bud Equip" Weight="74.877075080126531">
+        <GridMeasureColumn Name="Bud Equip" Weight="74.87707508012653">
           <Measure DefaultId="DataItem29" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Bud Equip %" Weight="74.871953208465143">
+        <GridDeltaColumn Name="Bud Equip %" Weight="74.87195320846514">
           <ActualValue DefaultId="DataItem32" />
           <TargetValue DefaultId="DataItem33" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Equip" Weight="74.866617925484519">
+        <GridMeasureColumn Name="Act Equip" Weight="74.86661792548452">
           <Measure DefaultId="DataItem28" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridDeltaColumn Name="Act Equip %" Weight="74.861060339046375">
+        <GridDeltaColumn Name="Act Equip %" Weight="74.86106033904638">
           <ActualValue DefaultId="DataItem30" />
           <TargetValue DefaultId="DataItem31" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Bud GP" Weight="68.807121369902646">
+        <GridMeasureColumn Name="Bud GP" Weight="68.80712136990265">
           <Measure DefaultId="DataItem1" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud GP Margin" Weight="74.861273877481665">
+        <GridMeasureColumn Name="Bud GP Margin" Weight="74.86127387748166">
           <Measure DefaultId="DataItem26" />
         </GridMeasureColumn>
         <GridMeasureColumn Name="Act GP" Weight="66.5875368095832">
@@ -724,7 +725,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Act GP Margin" Weight="68.807121369902646">
+        <GridMeasureColumn Name="Act GP Margin" Weight="68.80712136990265">
           <Measure DefaultId="DataItem3" />
         </GridMeasureColumn>
         <GridMeasureColumn Name="Bud Hours" Weight="55.489614007986">
@@ -835,7 +836,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Mat" Weight="54.764180545624171">
+        <GridMeasureColumn Name="Bud Mat" Weight="54.76418054562417">
           <Measure DefaultId="DataItem4" />
           <Totals>
             <Total Type="Sum" />
@@ -846,7 +847,7 @@
           <TargetValue DefaultId="DataItem18" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Mat" Weight="71.193434709311418">
+        <GridMeasureColumn Name="Act Mat" Weight="71.19343470931142">
           <Measure DefaultId="DataItem13" />
           <Totals>
             <Total Type="Sum" />
@@ -1007,7 +1008,7 @@
             <Total />
           </Totals>
         </GridDimensionColumn>
-        <GridMeasureColumn Name="Bud GP" Weight="68.791486126631085">
+        <GridMeasureColumn Name="Bud GP" Weight="68.79148612663109">
           <Measure DefaultId="DataItem1" />
           <Totals>
             <Total Type="Sum" />
@@ -1016,7 +1017,7 @@
         <GridMeasureColumn Name="Bud GP Margin" Weight="39.47693237948716">
           <Measure DefaultId="DataItem26" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Act GP" Weight="53.157057461487661">
+        <GridMeasureColumn Name="Act GP" Weight="53.15705746148766">
           <Measure DefaultId="DataItem2" />
           <Totals>
             <Total Type="Sum" />
@@ -1025,25 +1026,25 @@
         <GridMeasureColumn Name="Act GP Margin" Weight="32.8323001968012">
           <Measure DefaultId="DataItem3" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="GP Var" Weight="50.811893161716149">
+        <GridMeasureColumn Name="GP Var" Weight="50.81189316171615">
           <Measure DefaultId="DataItem7" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Hours" Weight="164.55236170063461">
+        <GridMeasureColumn Name="Bud Hours" Weight="164.5523617006346">
           <Measure DefaultId="DataItem9" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Act Hours" Weight="75.045257592688458">
+        <GridMeasureColumn Name="Act Hours" Weight="75.04525759268846">
           <Measure DefaultId="DataItem6" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Variance" Weight="75.045257592688458">
+        <GridMeasureColumn Name="Hours Variance" Weight="75.04525759268846">
           <Measure DefaultId="DataItem4" />
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Hours Var %" Weight="74.654396876059877">
+        <GridMeasureColumn Name="Hours Var %" Weight="74.65439687605988">
           <Measure DefaultId="DataItem5" />
         </GridMeasureColumn>
       </GridColumns>
@@ -1053,11 +1054,11 @@
   <LayoutTree>
     <LayoutGroup>
       <LayoutGroup Orientation="Vertical" Weight="1.1385202550405702">
-        <LayoutGroup Weight="0.92500479405844482">
+        <LayoutGroup Weight="0.9250047940584448">
           <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.839495009829747" />
           <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.839495009829747" />
           <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="0.839495009829747" />
-          <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="0.92500479405844482" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="0.9250047940584448" />
         </LayoutGroup>
         <LayoutTabContainer DashboardItem="tabContainerDashboardItem1">
           <LayoutTabPage DashboardItem="dashboardTabPage3">

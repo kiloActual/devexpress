@@ -1,3 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Dashboard>
   <Title Text="[DEV] Development Data" />
   <DataSources>
@@ -168,7 +169,7 @@
           <Column Table="taskhist" Name="laborcoaid" />
           <Column Table="taskhist" Name="scheduleid" />
           <Column Table="taskhist" Name="workunitid" />
-          <Column Table="taskhist" Name="dateScheduled" />
+          <Column Table="taskhist" Name="datescheduled" />
           <Column Table="taskhist" Name="datedone" />
           <Column Table="taskhist" Name="numberincrew" />
           <Column Table="taskhist" Name="workorderid" />
@@ -203,19 +204,19 @@
         <CalculatedField Name="directExpenses" Expression="Iif([jobcostcategory] In('M', 'L', 'B', 'E', 'S') ,[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfit" Expression="[revenue] - [totalExpense]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="internalOrClient" Expression="Iif([clientid] = 0, 'Internal' , 'Client' )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="groupIdDescription" Expression="ToStr([groupid]) + ' - ' + [groupdescription]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="groupIdDescription" Expression="Concat(ToStr([groupid]) , ' - ' , [groupdescription])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfitVariance" Expression="[grossProfit] - [budgetGrossProfit]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="hoursVariance" Expression="[totalHours] - [currentbudgethours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="profitCenterIdDescription" Expression="ToStr([profitCenter_Id]) + ' - ' + [profitCenter_description]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="profitCenterIdDescription" Expression="Concat(ToStr([profitCenter_Id]) , ' - ' , [profitCenter_description])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="grossProfitMargin" Expression="Iif(SUM([revenue]) = 0,0 , SUM([grossProfit])/SUM([revenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetRevenue" Expression="Iif([statementtype]=4,[currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetExpenses" Expression="Iif([jobcostcategory] In ('M', 'L', 'B', 'S', 'E'), [currentbudgetamount],0)" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetGrossProfit" Expression="[budgetRevenue] - [budgetExpenses]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetGrossProfitMargin" Expression="Iif(SUM([budgetRevenue])=0,0 , SUM([budgetGrossProfit])/SUM([budgetRevenue]) )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="projectIdName" Expression="ToStr([id]) + ' - ' + [name]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="estimatorLastFirst" Expression="[estimatorEmployee_lastName] + ', ' + [estimatorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="projectManagerLastFirst" Expression="[projectManagerEmployee_lastName] + ', ' + [projectManagerEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="salesPersonLastFirst" Expression="[lastname] + ', ' + [firstname]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectIdName" Expression="Concat(ToStr([id]) , ' - ' , [name])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="estimatorLastFirst" Expression="Concat([estimatorEmployee_lastName] , ', ' , [estimatorEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="projectManagerLastFirst" Expression="Concat([projectManagerEmployee_lastName] , ', ' , [projectManagerEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="salesPersonLastFirst" Expression="Concat( [lastname] , ', ' , [firstname])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="isInternal" Expression="Iif([clientid]=0, 'Internal', 'Client')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="totalHours" Expression="[hours] + [unPostedHours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="groupClosedOpen" Expression="Iif([groupisclosed]=True,'Closed' , 'Open')" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
@@ -224,7 +225,7 @@
         <CalculatedField Name="unPostedHours" Expression="[unpostedhourlyhours] + [unpostedsalaryhours]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="totalExpense" Expression="[directExpenses] + [unPostedAmount]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="efficiency" Expression="Iif(SUM([totalHours]) = 0,0, SUM([currentbudgethours]) / SUM([totalHours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="supervisorLastFirst" Expression=" [supervisorEmployee_lastName] + ', ' +[supervisorEmployee_firstName]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="supervisorLastFirst" Expression="Concat([supervisorEmployee_lastName] , ', ' ,[supervisorEmployee_firstName])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="Indirect Expense" Expression="Iif([statementtype] &gt;5 &amp;&amp; [statementtype] &lt;9,[amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetRevenuePerHour" Expression="Iif(SUM([currentbudgethours]) = 0 ,0 ,SUM([budgetRevenue])/SUM([currentbudgethours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="actualRevenuePerHour" Expression="Iif(SUM([totalHours]) = 0 ,0 ,SUM([revenue])/SUM([totalHours]))" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
@@ -240,7 +241,7 @@
         <CalculatedField Name="budgetSubcontractor" Expression="Iif([jobcostcategory] = 'S', [currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="equipment" Expression="Iif([jobcostcategory] = 'E', [amount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="budgetEquipment" Expression="Iif([jobcostcategory] = 'E', [currentbudgetamount] ,0 )" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
-        <CalculatedField Name="address_city" Expression="[addressline1] + ', ' + [city]" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
+        <CalculatedField Name="address_city" Expression="Concat([addressline1] , ', ' , [city])" DataType="Auto" DataMember="profitlosssummarybyprojectwithbudget" />
         <CalculatedField Name="actual_hours_number_in_crew" Expression="[hoursactual] * [numberincrew]" DataType="Auto" DataMember="task" />
         <CalculatedField Name="bill_type_description" Expression="Iif([billtype] = 'Y', 'Per Occurrence' , &#xA;Iif([billtype] = 'T', 'T&amp;M', 'None or Included in Contract' ) )" DataType="Auto" DataMember="task" />
       </CalculatedFields>
@@ -424,7 +425,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Mat" Weight="54.764180545624171">
+        <GridMeasureColumn Name="Bud Mat" Weight="54.76418054562417">
           <Measure DefaultId="DataItem4" />
           <Totals>
             <Total Type="Sum" />
@@ -435,7 +436,7 @@
           <TargetValue DefaultId="DataItem18" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Mat" Weight="71.193434709311418">
+        <GridMeasureColumn Name="Act Mat" Weight="71.19343470931142">
           <Measure DefaultId="DataItem13" />
           <Totals>
             <Total Type="Sum" />
@@ -638,7 +639,7 @@
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Bud Mat" Weight="54.764180545624171">
+        <GridMeasureColumn Name="Bud Mat" Weight="54.76418054562417">
           <Measure DefaultId="DataItem4" />
           <Totals>
             <Total Type="Sum" />
@@ -649,7 +650,7 @@
           <TargetValue DefaultId="DataItem18" />
           <DeltaOptions ResultIndicationMode="NoIndication" ValueType="PercentOfTarget" />
         </GridDeltaColumn>
-        <GridMeasureColumn Name="Act Mat" Weight="71.193434709311418">
+        <GridMeasureColumn Name="Act Mat" Weight="71.19343470931142">
           <Measure DefaultId="DataItem13" />
           <Totals>
             <Total Type="Sum" />
@@ -791,25 +792,25 @@
             <Total />
           </Totals>
         </GridDimensionColumn>
-        <GridDimensionColumn Name="Project Name" Weight="68.791486126631085">
+        <GridDimensionColumn Name="Project Name" Weight="68.79148612663109">
           <Dimension DefaultId="DataItem1" />
         </GridDimensionColumn>
         <GridDimensionColumn Name="Address" Weight="39.47693237948716">
           <Dimension DefaultId="DataItem26" />
         </GridDimensionColumn>
-        <GridDimensionColumn Name="Type" Weight="53.157057461487661">
+        <GridDimensionColumn Name="Type" Weight="53.15705746148766">
           <Dimension DefaultId="DataItem2" />
         </GridDimensionColumn>
         <GridDimensionColumn Name="Project Manager" Weight="91.07054697446047">
           <Dimension DefaultId="DataItem3" />
         </GridDimensionColumn>
-        <GridMeasureColumn Name="Bud Hours" Weight="164.55236170063461">
+        <GridMeasureColumn Name="Bud Hours" Weight="164.5523617006346">
           <Measure DefaultId="DataItem9" />
           <Totals>
             <Total Type="Sum" />
           </Totals>
         </GridMeasureColumn>
-        <GridMeasureColumn Name="Value" Weight="74.654396876059877">
+        <GridMeasureColumn Name="Value" Weight="74.65439687605988">
           <Measure DefaultId="DataItem5" />
         </GridMeasureColumn>
       </GridColumns>
@@ -872,11 +873,11 @@
   <LayoutTree>
     <LayoutGroup>
       <LayoutGroup Orientation="Vertical" Weight="1.1385202550405702">
-        <LayoutGroup Weight="0.92500479405844482">
+        <LayoutGroup Weight="0.9250047940584448">
           <LayoutItem DashboardItem="comboBoxDashboardItem1" Weight="0.839495009829747" />
           <LayoutItem DashboardItem="comboBoxDashboardItem2" Weight="0.839495009829747" />
           <LayoutItem DashboardItem="comboBoxDashboardItem3" Weight="0.839495009829747" />
-          <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="0.92500479405844482" />
+          <LayoutItem DashboardItem="dateFilterDashboardItem2" Weight="0.9250047940584448" />
         </LayoutGroup>
         <LayoutTabContainer DashboardItem="tabContainerDashboardItem1">
           <LayoutTabPage DashboardItem="dashboardTabPage3">
